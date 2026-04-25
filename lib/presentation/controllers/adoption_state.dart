@@ -51,9 +51,14 @@ class AdoptionState {
           animal.breed.toLowerCase().contains(query) ||
           animal.shelterName.toLowerCase().contains(query);
 
-      final matchesArea = searchFilters.areas.contains(animal.location);
-      final matchesType = searchFilters.types.contains(animal.type.label);
+      final matchesArea =
+          searchFilters.areas.isEmpty ||
+          searchFilters.areas.contains(animal.location);
+      final matchesType =
+          searchFilters.types.isEmpty ||
+          searchFilters.types.contains(animal.type.label);
       final matchesAge =
+          searchFilters.ages.isEmpty ||
           (searchFilters.ages.contains('幼年') &&
               animal.ageLabel.contains('幼')) ||
           (searchFilters.ages.contains('成犬 / 成貓') &&
@@ -101,9 +106,9 @@ class AdoptionState {
 
   List<String> get activeFilterLabels {
     return [
-      ...searchFilters.areas,
-      ...searchFilters.types,
-      ...searchFilters.ages,
+      if (searchFilters.areas.isNotEmpty) ...searchFilters.areas,
+      if (searchFilters.types.isNotEmpty) ...searchFilters.types,
+      if (searchFilters.ages.isNotEmpty) ...searchFilters.ages,
       ...searchFilters.genders.where((item) => item != '不限'),
       ...searchFilters.sizes.where((item) => item != '不限'),
       ...searchFilters.neuter.where((item) => item != '不限'),

@@ -163,9 +163,9 @@ class SearchFilters {
   });
 
   factory SearchFilters.defaults() => const SearchFilters(
-    areas: {'台南市'},
-    types: {'狗狗', '貓咪'},
-    ages: {'幼年', '成犬 / 成貓', '老年'},
+    areas: {},
+    types: {},
+    ages: {},
     genders: {'不限'},
     sizes: {'不限'},
     neuter: {'不限'},
@@ -207,6 +207,19 @@ class SearchFilters {
       copyWith(sizes: _toggleSingleSelect(sizes, value));
   SearchFilters toggleNeuter(String value) =>
       copyWith(neuter: _toggleSingleSelect(neuter, value));
+
+  SearchFilters selectArea(String value) =>
+      value == '不限' ? copyWith(areas: {}) : copyWith(areas: {value});
+  SearchFilters selectType(String value) =>
+      value == '不限' ? copyWith(types: {}) : copyWith(types: {value});
+  SearchFilters selectAge(String value) =>
+      value == '不限' ? copyWith(ages: {}) : copyWith(ages: {value});
+  SearchFilters selectGender(String value) =>
+      value == '不限' ? copyWith(genders: {'不限'}) : copyWith(genders: {value});
+  SearchFilters selectSize(String value) =>
+      value == '不限' ? copyWith(sizes: {'不限'}) : copyWith(sizes: {value});
+  SearchFilters selectNeuter(String value) =>
+      value == '不限' ? copyWith(neuter: {'不限'}) : copyWith(neuter: {value});
 
   static Set<String> _toggle(Set<String> source, String value) {
     final next = Set<String>.from(source);

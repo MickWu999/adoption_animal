@@ -72,10 +72,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const NotificationsPage(),
       ),
       GoRoute(
-        path: '/search/results',
-        builder: (context, state) => const SearchResultsPage(),
-      ),
-      GoRoute(
         path: '/animal/:animalId',
         builder: (context, state) =>
             AnimalDetailPage(animalId: state.pathParameters['animalId']!),

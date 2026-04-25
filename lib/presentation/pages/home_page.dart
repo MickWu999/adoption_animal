@@ -132,7 +132,12 @@ class HomePage extends ConsumerWidget {
                   SectionHeader(
                     title: '最新來的毛孩',
                     actionLabel: '查看更多',
-                    onTap: () => context.push('/search/results'),
+                    onTap: () {
+                      ref
+                          .read(adoptionControllerProvider.notifier)
+                          .selectTab(1);
+                      context.go('/search');
+                    },
                   ),
                   const SizedBox(height: 6),
                   SizedBox(
