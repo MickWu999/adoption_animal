@@ -4,6 +4,8 @@ void main() {
   runApp(const MyApp());
 }
 
+void _noop() {}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -47,7 +49,7 @@ class _AdoptionAppState extends State<AdoptionApp> {
       onOpenNotifications: _openNotifications,
       onOpenAnimal: _openAnimal,
     ),
-    SearchPage(animals: demoAnimals, onOpenResults: _openSearchResults),
+    SearchPage(animals: demoAnimals, onOpenAnimal: _openAnimal),
     FavoritesPage(
       animals: demoAnimals.where((animal) => animal.isFavorite).toList(),
       onOpenAnimal: _openAnimal,
@@ -60,15 +62,6 @@ class _AdoptionAppState extends State<AdoptionApp> {
     Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => const NotificationsPage()));
-  }
-
-  void _openSearchResults() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) =>
-            SearchResultsPage(animals: demoAnimals, onOpenAnimal: _openAnimal),
-      ),
-    );
   }
 
   void _openAnimal(Animal animal) {
@@ -292,7 +285,7 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   _SectionHeader(
-                    title: '熱門收養 TOP10',
+                    title: '熱門藏養 TOP10',
                     actionLabel: '查看更多',
                     onTap: () {},
                   ),
@@ -334,18 +327,95 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends StatefulWidget {
   const SearchPage({
     super.key,
     required this.animals,
-    required this.onOpenResults,
+    required this.onOpenAnimal,
   });
 
   final List<Animal> animals;
-  final VoidCallback onOpenResults;
+  final ValueChanged<Animal> onOpenAnimal;
+
+  @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPage> {
+  final TextEditingController _controller = TextEditingController();
+  SearchFilters _filters = SearchFilters.defaults();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  List<Animal> get _filteredAnimals {
+    final query = _controller.text.trim().toLowerCase();
+    return widget.animals.where((animal) {
+      final isCat = animal.breed.contains('貓');
+      final matchesQuery =
+          query.isEmpty ||
+          animal.name.toLowerCase().contains(query) ||
+          animal.location.toLowerCase().contains(query) ||
+          animal.breed.toLowerCase().contains(query) ||
+          animal.shelterName.toLowerCase().contains(query);
+      final matchesType =
+          (isCat && _filters.types.contains('貓咪')) ||
+          (!isCat && _filters.types.contains('狗狗'));
+      final matchesAge =
+          (_filters.ages.contains('幼年') && animal.ageLabel.contains('幼')) ||
+          (_filters.ages.contains('成犬 / 成貓') &&
+              animal.ageLabel.contains('成')) ||
+          (_filters.ages.contains('老年') && animal.ageLabel.contains('老'));
+      return matchesQuery && matchesType && matchesAge;
+    }).toList();
+  }
+
+  Future<void> _openFilterSheet() async {
+    final result = await showModalBottomSheet<SearchFilters>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => FilterBottomSheet(initialFilters: _filters),
+    );
+    if (result != null) {
+      setState(() {
+        _filters = result;
+      });
+    }
+  }
+
+  void _openResults() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SearchResultsPage(
+          animals: _filteredAnimals,
+          onOpenAnimal: widget.onOpenAnimal,
+          query: _controller.text.trim(),
+          filters: _filters,
+        ),
+      ),
+    );
+  }
+
+  List<String> get _activeFilterLabels {
+    return [
+      ..._filters.areas,
+      ..._filters.types,
+      ..._filters.ages,
+      ..._filters.genders.where((item) => item != '不限'),
+      ..._filters.sizes.where((item) => item != '不限'),
+      ..._filters.neuter.where((item) => item != '不限'),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final hasQuery = _controller.text.trim().isNotEmpty;
+    final results = _filteredAnimals;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -355,79 +425,164 @@ class SearchPage extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: GestureDetector(
-                    onTap: onOpenResults,
-                    child: const RoundedSearchField(
-                      hintText: '搜尋品種、地區或關鍵字',
-                      enabled: false,
+                  child: RoundedSearchField(
+                    hintText: '搜尋品種、地區或關鍵字',
+                    controller: _controller,
+                    onChanged: (_) => setState(() {}),
+                    onSubmitted: (_) => _openResults(),
+                    suffixIcon: IconButton(
+                      onPressed: _openResults,
+                      icon: const Icon(Icons.north_east_rounded),
                     ),
                   ),
                 ),
-                TextButton(onPressed: onOpenResults, child: const Text('清除')),
+                IconButton(
+                  onPressed: _openFilterSheet,
+                  icon: const Icon(Icons.tune_rounded),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const StatesPreviewPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.layers_outlined),
+                ),
               ],
             ),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: filterChips
-                  .map((label) => _FilterChip(label: label))
-                  .toList(),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+              
+                  ..._activeFilterLabels.map(
+                    (label) => Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: _FilterChip(
+                        label: label,
+                        selected: true,
+                        onTap: _openFilterSheet,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              '熱門搜尋',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 14),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: const [
-                _TagPill(label: '幼犬'),
-                _TagPill(label: '幼貓'),
-                _TagPill(label: '黑色貓咪'),
-                _TagPill(label: '米克斯'),
-                _TagPill(label: '已絕育'),
-              ],
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              '推薦分類',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: List.generate(
-                3,
-                (index) => Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: index == 2 ? 0 : 12),
-                    child: _CategoryCard(
-                      animal: animals[index],
-                      label: categoryLabels[index],
-                      count: categoryCounts[index],
-                      onTap: onOpenResults,
+            const SizedBox(height: 18),
+            if (hasQuery)
+              Expanded(
+                child: results.isEmpty
+                    ? Center(
+                        child: EmptyStatePanel(
+                          imagePath:
+                              'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg',
+                          title: '找不到符合條件的毛孩',
+                          message: '試試調整關鍵字、篩選條件或附近範圍',
+                          actionLabel: '清除篩選',
+                          onPressed: () {
+                            setState(() {
+                              _controller.clear();
+                              _filters = SearchFilters.defaults();
+                            });
+                          },
+                          icon: Icons.search_off_rounded,
+                        ),
+                      )
+                    : ListView(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                '搜尋結果 (${results.length})',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: _openResults,
+                                child: const Text('查看全部'),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ...results
+                              .take(3)
+                              .map(
+                                (animal) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: _AnimalListTile(
+                                    animal: animal,
+                                    onTap: () => widget.onOpenAnimal(animal),
+                                  ),
+                                ),
+                              ),
+                        ],
+                      ),
+              )
+            else ...[
+              const Text(
+                '熱門搜尋',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 14),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: const [
+                  _TagPill(label: '幼犬'),
+                  _TagPill(label: '幼貓'),
+                  _TagPill(label: '黑色貓咪'),
+                  _TagPill(label: '米克斯'),
+                  _TagPill(label: '已絕育'),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                '推薦分類',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: List.generate(
+                  3,
+                  (index) => Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: index == 2 ? 0 : 12),
+                      child: _CategoryCard(
+                        animal: widget.animals[index],
+                        label: categoryLabels[index],
+                        count: categoryCounts[index],
+                        onTap: _openResults,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              '最近搜尋',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 14),
-            ...recentSearches.map(
-              (item) => ListTile(
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                leading: const Icon(Icons.history_rounded, size: 18),
-                title: Text(item),
-                onTap: onOpenResults,
+              const SizedBox(height: 24),
+              const Text(
+                '最近搜尋',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
               ),
-            ),
+              const SizedBox(height: 14),
+              ...recentSearches.map(
+                (item) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  leading: const Icon(Icons.history_rounded, size: 18),
+                  title: Text(item),
+                  onTap: () {
+                    setState(() {
+                      _controller.text = item;
+                    });
+                  },
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -440,10 +595,14 @@ class SearchResultsPage extends StatelessWidget {
     super.key,
     required this.animals,
     required this.onOpenAnimal,
+    this.query = '',
+    this.filters,
   });
 
   final List<Animal> animals;
   final ValueChanged<Animal> onOpenAnimal;
+  final String query;
+  final SearchFilters? filters;
 
   @override
   Widget build(BuildContext context) {
@@ -462,16 +621,30 @@ class SearchResultsPage extends StatelessWidget {
                     icon: const Icon(Icons.arrow_back_ios_new_rounded),
                   ),
                   const Text(
-                    '台南市・狗狗',
+                    '搜尋結果',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                   ),
                   const Spacer(),
-                  TextButton(onPressed: () {}, child: const Text('篩選')),
+                  TextButton(
+                    onPressed: () async {
+                      await showModalBottomSheet<SearchFilters>(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (_) => FilterBottomSheet(
+                          initialFilters: filters ?? SearchFilters.defaults(),
+                        ),
+                      );
+                    },
+                    child: const Text('篩選'),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
               Text(
-                '共 ${animals.length} 隻結果',
+                query.isEmpty
+                    ? '共 ${animals.length} 隻結果'
+                    : '「$query」共 ${animals.length} 隻結果',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   color: Colors.black54,
@@ -479,21 +652,34 @@ class SearchResultsPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: GridView.builder(
-                  itemCount: animals.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 0.66,
-                  ),
-                  itemBuilder: (context, index) {
-                    return AnimalCard(
-                      animal: animals[index],
-                      onTap: () => onOpenAnimal(animals[index]),
-                    );
-                  },
-                ),
+                child: animals.isEmpty
+                    ? Center(
+                        child: EmptyStatePanel(
+                          imagePath:
+                              'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg',
+                          title: '搜尋無結果',
+                          message: '沒有找到符合條件的毛孩，試試放寬篩選條件',
+                          actionLabel: '重新搜尋',
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: Icons.search_off_rounded,
+                        ),
+                      )
+                    : GridView.builder(
+                        itemCount: animals.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 0.66,
+                            ),
+                        itemBuilder: (context, index) {
+                          return AnimalCard(
+                            animal: animals[index],
+                            onTap: () => onOpenAnimal(animals[index]),
+                          );
+                        },
+                      ),
               ),
             ],
           ),
@@ -717,7 +903,7 @@ class AnimalDetailPage extends StatelessWidget {
   }
 }
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
   const FavoritesPage({
     super.key,
     required this.animals,
@@ -728,7 +914,33 @@ class FavoritesPage extends StatelessWidget {
   final ValueChanged<Animal> onOpenAnimal;
 
   @override
+  State<FavoritesPage> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+  int _selectedTab = 0;
+
+  List<Animal> get _visibleAnimals {
+    if (_selectedTab == 1) {
+      return widget.animals
+          .where((animal) => !animal.breed.contains('貓'))
+          .toList();
+    }
+    if (_selectedTab == 2) {
+      return widget.animals
+          .where((animal) => animal.breed.contains('貓'))
+          .toList();
+    }
+    if (_selectedTab == 3) {
+      return const [];
+    }
+    return widget.animals;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final animals = _visibleAnimals;
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -746,82 +958,107 @@ class FavoritesPage extends StatelessWidget {
             const SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _TabText(label: '全部', selected: true),
-                _TabText(label: '狗狗'),
-                _TabText(label: '貓咪'),
-                _TabText(label: '已送養'),
-              ],
+              children: List.generate(
+                favoriteTabs.length,
+                (index) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedTab = index;
+                    });
+                  },
+                  child: _TabText(
+                    label: favoriteTabs[index],
+                    selected: _selectedTab == index,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 18),
             Expanded(
-              child: ListView.separated(
-                itemCount: animals.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final animal = animals[index];
-                  return GestureDetector(
-                    onTap: () => onOpenAnimal(animal),
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(22),
+              child: animals.isEmpty
+                  ? Center(
+                      child: EmptyStatePanel(
+                        imagePath:
+                            'assets/images/dog/alvan-nee-T-0EW-SEbsE-unsplash.jpg',
+                        title: '還沒有收藏任何毛孩',
+                        message: '快去尋找喜歡的毛孩，加入收藏吧',
+                        actionLabel: '去尋找毛孩',
+                        onPressed: () {
+                          Navigator.of(context).maybePop();
+                        },
+                        icon: Icons.favorite_border_rounded,
                       ),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.asset(
-                              animal.imagePath,
-                              width: 88,
-                              height: 88,
-                              fit: BoxFit.cover,
+                    )
+                  : ListView.separated(
+                      itemCount: animals.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final animal = animals[index];
+                        return GestureDetector(
+                          onTap: () => widget.onOpenAnimal(animal),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(22),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(
-                                  animal.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Image.asset(
+                                    animal.imagePath,
+                                    width: 88,
+                                    height: 88,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${animal.location}・${animal.shelterName}',
-                                  style: const TextStyle(color: Colors.black54),
-                                ),
-                                const SizedBox(height: 8),
-                                Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: animal.tags
-                                      .map(
-                                        (tag) => _StatusChip(
-                                          text: tag.label,
-                                          color: tag.color,
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        animal.name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w800,
                                         ),
-                                      )
-                                      .toList(),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${animal.location}・${animal.shelterName}',
+                                        style: const TextStyle(
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        spacing: 6,
+                                        runSpacing: 6,
+                                        children: animal.tags
+                                            .map(
+                                              (tag) => _StatusChip(
+                                                text: tag.label,
+                                                color: tag.color,
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.favorite_rounded,
+                                  color: Color(0xFFE35D4F),
                                 ),
                               ],
                             ),
                           ),
-                          const Icon(
-                            Icons.favorite_rounded,
-                            color: Color(0xFFE35D4F),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
@@ -1177,25 +1414,582 @@ class RoundedSearchField extends StatelessWidget {
     super.key,
     required this.hintText,
     this.enabled = true,
+    this.controller,
+    this.onChanged,
+    this.onSubmitted,
+    this.suffixIcon,
   });
 
   final String hintText;
   final bool enabled;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(
       ignoring: !enabled,
       child: TextField(
+        controller: controller,
         enabled: enabled,
+        onChanged: onChanged,
+        onSubmitted: onSubmitted,
         decoration: InputDecoration(
           hintText: hintText,
           prefixIcon: const Icon(Icons.search_rounded),
+          suffixIcon: suffixIcon,
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(22),
             borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmptyStatePanel extends StatelessWidget {
+  const EmptyStatePanel({
+    super.key,
+    required this.imagePath,
+    required this.title,
+    required this.message,
+    required this.actionLabel,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String imagePath;
+  final String title;
+  final String message;
+  final String actionLabel;
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            alignment: Alignment.topRight,
+            children: [
+              Image.asset(
+                imagePath,
+                width: 136,
+                height: 136,
+                fit: BoxFit.cover,
+              ),
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.white,
+                child: Icon(icon, color: const Color(0xFFE35D4F)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: onPressed,
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF4F8A3F),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            ),
+            child: Text(actionLabel),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnimalListTile extends StatelessWidget {
+  const _AnimalListTile({required this.animal, required this.onTap});
+
+  final Animal animal;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Image.asset(
+                animal.imagePath,
+                width: 78,
+                height: 78,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    animal.name,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${animal.location}・${animal.shelterName}',
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _TagPill(label: animal.ageLabel),
+                      const SizedBox(width: 6),
+                      _TagPill(label: animal.genderLabel),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class StatesPreviewPage extends StatelessWidget {
+  const StatesPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F4ED),
+      appBar: AppBar(
+        title: const Text('狀態預覽'),
+        backgroundColor: Colors.transparent,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        children: [
+          const Text(
+            '空狀態',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 14),
+          const _PreviewCard(
+            child: EmptyStatePanel(
+              imagePath: 'assets/images/dog/alvan-nee-T-0EW-SEbsE-unsplash.jpg',
+              title: '還沒有收藏任何毛孩',
+              message: '快去尋找喜歡的毛孩，加入收藏吧',
+              actionLabel: '去尋找毛孩',
+              onPressed: _noop,
+              icon: Icons.favorite_border_rounded,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const _PreviewCard(
+            child: EmptyStatePanel(
+              imagePath:
+                  'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg',
+              title: '找不到符合條件的毛孩',
+              message: '試試調整關鍵字、篩選條件或附近範圍',
+              actionLabel: '清除篩選',
+              onPressed: _noop,
+              icon: Icons.search_off_rounded,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const _PreviewCard(
+            child: EmptyStatePanel(
+              imagePath: 'assets/images/shaltar/sheltar.jpg',
+              title: '附近沒有收容所',
+              message: '請嘗試打開定位或放寬搜尋範圍',
+              actionLabel: '重新定位',
+              onPressed: _noop,
+              icon: Icons.location_off_rounded,
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            '載入 / 錯誤',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          ),
+          const SizedBox(height: 14),
+          const _PreviewCard(
+            child: LoadingStatePanel(title: '資料載入中...', message: '請稍候片刻'),
+          ),
+          const SizedBox(height: 12),
+          const _PreviewCard(
+            child: ErrorStatePanel(
+              icon: Icons.broken_image_outlined,
+              title: '圖片載入失敗',
+              message: '點擊重新載入',
+              actionLabel: '重新載入',
+            ),
+          ),
+          const SizedBox(height: 12),
+          const _PreviewCard(
+            child: ErrorStatePanel(
+              icon: Icons.wifi_off_rounded,
+              title: '網路連線異常',
+              message: '請檢查網路設定後再試一次',
+              actionLabel: '重試',
+              secondaryLabel: '回首頁',
+            ),
+          ),
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: () {
+              showModalBottomSheet<SearchFilters>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (_) =>
+                    FilterBottomSheet(initialFilters: SearchFilters.defaults()),
+              );
+            },
+            child: const Text('開啟篩選 Bottom Sheet'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewCard extends StatelessWidget {
+  const _PreviewCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: child,
+    );
+  }
+}
+
+class LoadingStatePanel extends StatelessWidget {
+  const LoadingStatePanel({
+    super.key,
+    required this.title,
+    required this.message,
+  });
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(
+          width: 56,
+          height: 56,
+          child: CircularProgressIndicator(strokeWidth: 3),
+        ),
+        const SizedBox(height: 18),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        Text(message, style: const TextStyle(color: Colors.black54)),
+      ],
+    );
+  }
+}
+
+class ErrorStatePanel extends StatelessWidget {
+  const ErrorStatePanel({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.actionLabel,
+    this.secondaryLabel,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String actionLabel;
+  final String? secondaryLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 62, color: const Color(0xFF5A5A5A)),
+        const SizedBox(height: 18),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 8),
+        Text(message, style: const TextStyle(color: Colors.black54)),
+        const SizedBox(height: 20),
+        FilledButton(onPressed: () {}, child: Text(actionLabel)),
+        if (secondaryLabel != null) ...[
+          const SizedBox(height: 10),
+          OutlinedButton(onPressed: () {}, child: Text(secondaryLabel!)),
+        ],
+      ],
+    );
+  }
+}
+
+class FilterBottomSheet extends StatefulWidget {
+  const FilterBottomSheet({super.key, required this.initialFilters});
+
+  final SearchFilters initialFilters;
+
+  @override
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  late SearchFilters _filters = widget.initialFilters;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFF7F4EE),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Spacer(),
+                Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4CEC4),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                const Text(
+                  '篩選條件',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                ),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _filters = SearchFilters.defaults();
+                    });
+                  },
+                  child: const Text('重設'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '地區（可多選）',
+              children: taiwanAreas.map((item) {
+                final selected = _filters.areas.contains(item);
+                return SelectablePill(
+                  label: item,
+                  selected: selected,
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleArea(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '種類',
+              children: animalTypes.map((item) {
+                return SelectablePill(
+                  label: item,
+                  selected: _filters.types.contains(item),
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleType(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '年齡',
+              children: ageFilters.map((item) {
+                return SelectablePill(
+                  label: item,
+                  selected: _filters.ages.contains(item),
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleAge(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '性別',
+              children: genderFilters.map((item) {
+                return SelectablePill(
+                  label: item,
+                  selected: _filters.genders.contains(item),
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleGender(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '體型',
+              children: sizeFilters.map((item) {
+                return SelectablePill(
+                  label: item,
+                  selected: _filters.sizes.contains(item),
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleSize(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 18),
+            _FilterSection(
+              title: '是否絕育',
+              children: neuterFilters.map((item) {
+                return SelectablePill(
+                  label: item,
+                  selected: _filters.neuter.contains(item),
+                  onTap: () {
+                    setState(() {
+                      _filters = _filters.toggleNeuter(item);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(_filters),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF4F8A3F),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: const Text('查看結果 (128)'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterSection extends StatelessWidget {
+  const _FilterSection({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+        const SizedBox(height: 10),
+        Wrap(spacing: 8, runSpacing: 8, children: children),
+      ],
+    );
+  }
+}
+
+class SelectablePill extends StatelessWidget {
+  const SelectablePill({
+    super.key,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF4F8A3F) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFD9D3C8),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: selected ? Colors.white : const Color(0xFF4B4B4B),
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -1360,20 +2154,51 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label});
+  const _FilterChip({
+    required this.label,
+    this.selected = false,
+    this.icon,
+    this.onTap,
+  });
 
   final String label;
+  final bool selected;
+  final IconData? icon;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE7E0D6)),
+    final foreground = selected ? Colors.white : const Color(0xFF4B4B4B);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? const Color(0xFF4F8A3F) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFE7E0D6),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 16, color: foreground),
+              const SizedBox(width: 6),
+            ],
+            Text(
+              label,
+              style: TextStyle(
+                color: foreground,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
       ),
-      child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
     );
   }
 }
@@ -1442,29 +2267,22 @@ class _CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-        ),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: Image.asset(
-                animal.imagePath,
-                height: 110,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: Image.asset(
+              animal.imagePath,
+              height: 110,
+              width: double.infinity,
+              fit: BoxFit.cover,
             ),
-            const SizedBox(height: 10),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 4),
-            Text(count, style: const TextStyle(color: Colors.black54)),
-          ],
-        ),
+          ),
+          const SizedBox(height: 10),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w800)),
+          const SizedBox(height: 4),
+          Text(count, style: const TextStyle(color: Colors.black54)),
+        ],
       ),
     );
   }
@@ -1776,6 +2594,73 @@ class HomeCategory {
   final Color foreground;
 }
 
+class SearchFilters {
+  const SearchFilters({
+    required this.areas,
+    required this.types,
+    required this.ages,
+    required this.genders,
+    required this.sizes,
+    required this.neuter,
+  });
+
+  factory SearchFilters.defaults() => const SearchFilters(
+    areas: {'台南市'},
+    types: {'狗狗', '貓咪'},
+    ages: {'幼年', '成犬 / 成貓', '老年'},
+    genders: {'不限', '公', '母'},
+    sizes: {'不限', '小型', '中型', '大型'},
+    neuter: {'不限', '已絕育', '未絕育'},
+  );
+
+  final Set<String> areas;
+  final Set<String> types;
+  final Set<String> ages;
+  final Set<String> genders;
+  final Set<String> sizes;
+  final Set<String> neuter;
+
+  SearchFilters copyWith({
+    Set<String>? areas,
+    Set<String>? types,
+    Set<String>? ages,
+    Set<String>? genders,
+    Set<String>? sizes,
+    Set<String>? neuter,
+  }) {
+    return SearchFilters(
+      areas: areas ?? this.areas,
+      types: types ?? this.types,
+      ages: ages ?? this.ages,
+      genders: genders ?? this.genders,
+      sizes: sizes ?? this.sizes,
+      neuter: neuter ?? this.neuter,
+    );
+  }
+
+  SearchFilters toggleArea(String value) =>
+      copyWith(areas: _toggle(areas, value));
+  SearchFilters toggleType(String value) =>
+      copyWith(types: _toggle(types, value));
+  SearchFilters toggleAge(String value) => copyWith(ages: _toggle(ages, value));
+  SearchFilters toggleGender(String value) =>
+      copyWith(genders: _toggle(genders, value));
+  SearchFilters toggleSize(String value) =>
+      copyWith(sizes: _toggle(sizes, value));
+  SearchFilters toggleNeuter(String value) =>
+      copyWith(neuter: _toggle(neuter, value));
+
+  static Set<String> _toggle(Set<String> source, String value) {
+    final next = Set<String>.from(source);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return next.isEmpty ? {value} : next;
+  }
+}
+
 const homeCategories = [
   HomeCategory(
     label: '狗狗',
@@ -1809,11 +2694,17 @@ const homeCategories = [
   ),
 ];
 
-const filterChips = ['地區', '狗貓', '年齡', '體型', '更多篩選'];
+const favoriteTabs = ['全部', '狗狗', '貓咪', '已送養'];
 const categoryLabels = ['狗狗', '貓咪', '幼年動物'];
 const categoryCounts = ['128 隻', '86 隻', '64 隻'];
 const recentSearches = ['台南市狗狗', '黑色幼貓', '潤埤收容所'];
 const profileMenus = ['認養偏好設定', '我的瀏覽紀錄', '通知設定', '幫助與客服', '關於我們', '設定'];
+const taiwanAreas = ['台南市', '台北市', '新北市', '高雄市', '桃園市', '台中市', '彰化縣', '屏東縣'];
+const animalTypes = ['狗狗', '貓咪', '其他'];
+const ageFilters = ['幼年', '成犬 / 成貓', '老年'];
+const genderFilters = ['不限', '公', '母'];
+const sizeFilters = ['不限', '小型', '中型', '大型'];
+const neuterFilters = ['不限', '已絕育', '未絕育'];
 
 const demoAnimals = [
   Animal(
