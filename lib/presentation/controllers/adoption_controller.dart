@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/mappers/animal_api_mapper.dart';
 import '../../data/repositories/mock_adoption_repository.dart';
+import '../../data/models/animal_api_query_params.dart';
 import '../../domain/models/app_models.dart';
 import 'adoption_state.dart';
 
@@ -119,7 +121,7 @@ class AdoptionController extends Notifier<AdoptionState> {
       }
       state = state.copyWith(
         animals: animals,
-        shelters: _buildSheltersFromAnimals(animals),
+        shelters: AnimalApiMapper.sheltersFromAnimals(animals),
       );
     } catch (_) {
       if (requestToken != _fetchToken) {
@@ -128,27 +130,4 @@ class AdoptionController extends Notifier<AdoptionState> {
     }
   }
 
-  List<Shelter> _buildSheltersFromAnimals(List<Animal> animals) {
-    final sheltersById = <String, Shelter>{};
-    for (final animal in animals) {
-      final key = animal.animalShelterPkid != 0
-          ? animal.animalShelterPkid.toString()
-          : animal.shelterId;
-      if (sheltersById.containsKey(key)) {
-        continue;
-      }
-      sheltersById[key] = Shelter(
-        id: key,
-        shelterPkid: animal.animalShelterPkid,
-        name: animal.shelterName,
-        imagePath: animal.imagePath,
-        address: animal.shelterAddress,
-        phone: animal.shelterTel,
-        distance: '',
-        capacity: '',
-        openingHours: '',
-      );
-    }
-    return sheltersById.values.toList(growable: false);
-  }
 }

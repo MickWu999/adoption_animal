@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/adoption_theme.dart';
+
 class EmptyStatePanel extends StatelessWidget {
   const EmptyStatePanel({
     super.key,
@@ -36,8 +38,8 @@ class EmptyStatePanel extends StatelessWidget {
               ),
               CircleAvatar(
                 radius: 18,
-                backgroundColor: Colors.white,
-                child: Icon(icon, color: const Color(0xFFE35D4F)),
+                backgroundColor: AdoptionColors.surface,
+                child: Icon(icon, color: AdoptionColors.danger),
               ),
             ],
           ),
@@ -52,7 +54,7 @@ class EmptyStatePanel extends StatelessWidget {
             message,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.black54,
+              color: AdoptionColors.textMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -60,7 +62,7 @@ class EmptyStatePanel extends StatelessWidget {
           FilledButton(
             onPressed: onPressed,
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF4F8A3F),
+              backgroundColor: AdoptionColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
             ),
             child: Text(actionLabel),

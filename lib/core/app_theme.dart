@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 
-class AppTheme {
-  static const Color primary = Color(0xFF4F8A3F);
-  static const Color secondary = Color(0xFFF2C14E);
-  static const Color background = Color(0xFFF8F4ED);
+import 'theme/adoption_theme.dart';
 
+class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      scaffoldBackgroundColor: background,
+      scaffoldBackgroundColor: AdoptionColors.background,
       fontFamily: 'PingFang TC',
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primary,
-        primary: primary,
-        secondary: secondary,
-        surface: Colors.white,
+        seedColor: AdoptionColors.primary,
+        primary: AdoptionColors.primary,
+        secondary: AdoptionColors.secondary,
+        surface: AdoptionColors.surface,
       ),
       navigationBarTheme: const NavigationBarThemeData(
-        indicatorColor: Color(0xFFE7F3E2),
-        backgroundColor: Colors.white,
+        indicatorColor: AdoptionColors.primarySoft,
+        backgroundColor: AdoptionColors.surface,
         height: 74,
       ),
       appBarTheme: const AppBarTheme(
@@ -26,10 +24,13 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
+      cardColor: AdoptionColors.surface,
+      dividerColor: AdoptionColors.borderSoft,
       chipTheme: ChipThemeData(
-        backgroundColor: Colors.white,
+        backgroundColor: AdoptionColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
+      extensions: const [AdoptionTheme.light()],
     );
   }
 }

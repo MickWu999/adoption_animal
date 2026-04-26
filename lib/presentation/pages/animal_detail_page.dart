@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
 
@@ -12,15 +13,11 @@ class AnimalDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint('[AnimalDetailPage] route animalId=$animalId');
     final animal = ref.watch(animalProvider(animalId));
     final shelter = ref.watch(shelterForAnimalProvider(animalId));
     final controller = ref.read(adoptionControllerProvider.notifier);
 
     if (animal == null || shelter == null) {
-      debugPrint(
-        '[AnimalDetailPage] missing data animal=${animal?.id} shelter=${shelter?.id}',
-      );
       return Scaffold(
         body: Center(
           child: EmptyStatePanel(
@@ -53,7 +50,7 @@ class AnimalDetailPage extends ConsumerWidget {
                   const SizedBox(width: 8),
                   CircleIconButton(
                     icon: Icons.favorite_rounded,
-                    color: const Color(0xFFE35D4F),
+                    color: AdoptionColors.danger,
                     onTap: () => controller.toggleFavorite(animal.id),
                   ),
                   const SizedBox(width: 12),
@@ -83,7 +80,7 @@ class AnimalDetailPage extends ConsumerWidget {
                 child: Container(
                   transform: Matrix4.translationValues(0, -18, 0),
                   decoration: const BoxDecoration(
-                    color: Color(0xFFF8F4ED),
+                    color: AdoptionColors.background,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(28),
                     ),
@@ -118,7 +115,7 @@ class AnimalDetailPage extends ConsumerWidget {
                         Text(
                           '${animal.location}・${animal.ageLabel}・${animal.genderLabel}',
                           style: const TextStyle(
-                            color: Colors.black54,
+                            color: AdoptionColors.textMuted,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -175,14 +172,14 @@ class AnimalDetailPage extends ConsumerWidget {
                                       Text(
                                         shelter.address,
                                         style: const TextStyle(
-                                          color: Colors.black54,
+                                          color: AdoptionColors.textMuted,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         shelter.phone,
                                         style: const TextStyle(
-                                          color: Colors.black54,
+                                          color: AdoptionColors.textMuted,
                                         ),
                                       ),
                                     ],
@@ -210,7 +207,7 @@ class AnimalDetailPage extends ConsumerWidget {
                   child: FilledButton(
                     onPressed: () => context.push('/shelter/${shelter.id}'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF5E9B54),
+                      backgroundColor: AdoptionColors.success,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(18),
@@ -224,7 +221,7 @@ class AnimalDetailPage extends ConsumerWidget {
                 const SizedBox(width: 12),
                 BottomAction(
                   icon: Icons.favorite_rounded,
-                  color: const Color(0xFFE35D4F),
+                  color: AdoptionColors.danger,
                   onTap: () => controller.toggleFavorite(animal.id),
                 ),
               ],

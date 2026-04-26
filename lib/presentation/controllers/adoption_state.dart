@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
-
-import '../../data/repositories/mock_adoption_repository.dart';
+import '../../core/lookups/adoption_lookups.dart';
 import '../../domain/models/app_models.dart';
 
 class AdoptionState {
@@ -14,19 +12,6 @@ class AdoptionState {
     required this.notifications,
     required this.homeCategories,
   });
-
-  factory AdoptionState.initial(AdoptionRepository repository) {
-    return AdoptionState(
-      currentTab: 0,
-      searchQuery: '',
-      searchFilters: AnimalSearchParams.defaults(),
-      favoriteFilter: FavoriteFilter.all,
-      animals: repository.getAnimals(),
-      shelters: repository.getShelters(),
-      notifications: repository.getNotifications(),
-      homeCategories: repository.getHomeCategories(),
-    );
-  }
 
   factory AdoptionState.empty({
     required List<HomeCategory> homeCategories,
@@ -187,14 +172,7 @@ class AdoptionState {
   }
 
   Animal? animalById(String animalId) {
-    final animal = _firstWhereOrNull(
-      animals,
-      (item) => item.id == animalId,
-    );
-    debugPrint(
-      '[animalById] lookup=$animalId found=${animal?.id} total=${animals.length} ids=${animals.take(8).map((item) => item.id).join(',')}',
-    );
-    return animal;
+    return _firstWhereOrNull(animals, (item) => item.id == animalId);
   }
 
   Shelter? shelterById(String shelterId) =>
@@ -216,15 +194,11 @@ class AdoptionState {
   Shelter? shelterForAnimal(String animalId) {
     final animal = animalById(animalId);
     if (animal == null) {
-      debugPrint('[shelterForAnimal] animal not found for id=$animalId');
       return null;
     }
     final shelter = shelterById(animal.shelterId) ??
         shelterByName(animal.shelterName) ??
         _shelterFromAnimal(animal);
-    debugPrint(
-      '[shelterForAnimal] animalId=$animalId shelterId=${animal.shelterId} shelterName=${animal.shelterName} resolved=${shelter?.name}',
-    );
     return shelter;
   }
 

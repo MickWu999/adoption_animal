@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/adoption_theme.dart';
+
 class AppSearchField extends StatelessWidget {
   const AppSearchField({
     super.key,
@@ -33,7 +35,7 @@ class AppSearchField extends StatelessWidget {
         prefixIcon: const Icon(Icons.search_rounded),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AdoptionColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(22),
           borderSide: BorderSide.none,

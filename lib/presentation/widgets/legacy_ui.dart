@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/responsive/responsive.dart';
 import '../../domain/models/app_models.dart';
 
 void noop() {}
@@ -41,7 +42,7 @@ class RoundedSearchField extends StatelessWidget {
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(context.r(22)),
             borderSide: BorderSide.none,
           ),
         ),
@@ -116,28 +117,35 @@ class EmptyStatePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: context.w(24)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             alignment: Alignment.topRight,
             children: [
-              AnimalImage(imagePath: imagePath, width: 136, height: 136),
+              AnimalImage(
+                imagePath: imagePath,
+                width: context.w(136),
+                height: context.w(136),
+              ),
               CircleAvatar(
-                radius: 18,
+                radius: context.r(18),
                 backgroundColor: Colors.white,
                 child: Icon(icon, color: const Color(0xFFE35D4F)),
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: context.h(18)),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              fontSize: context.sp(22),
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.h(8)),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -146,12 +154,15 @@ class EmptyStatePanel extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: context.h(20)),
           FilledButton(
             onPressed: onPressed,
             style: FilledButton.styleFrom(
               backgroundColor: const Color(0xFF4F8A3F),
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.w(28),
+                vertical: context.h(14),
+              ),
             ),
             child: Text(actionLabel),
           ),
@@ -181,11 +192,11 @@ class AnimalCard extends StatelessWidget {
       width: width,
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(context.r(18)),
         elevation: 0.5,
         shadowColor: Colors.black.withValues(alpha: 0.08),
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(context.r(18)),
           onTap: onTap,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,24 +207,24 @@ class AnimalCard extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(18),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(context.r(18)),
                       ),
                       child: AnimalImage(imagePath: animal.imagePath),
                     ),
                     Positioned(
-                      top: 8,
-                      right: 8,
+                      top: context.h(8),
+                      right: context.w(8),
                       child: GestureDetector(
                         onTap: onFavoriteTap,
                         child: CircleAvatar(
-                          radius: 14,
+                          radius: context.r(14),
                           backgroundColor: Colors.white.withValues(alpha: 0.95),
                           child: Icon(
                             animal.isFavorite
                                 ? Icons.favorite_rounded
                                 : Icons.favorite_border_rounded,
-                            size: 17,
+                            size: context.sp(17),
                             color: animal.isFavorite
                                 ? const Color(0xFFE35D4F)
                                 : Colors.black54,
@@ -225,7 +236,12 @@ class AnimalCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                padding: EdgeInsets.fromLTRB(
+                  context.w(10),
+                  context.h(10),
+                  context.w(10),
+                  context.h(12),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -233,30 +249,30 @@ class AnimalCard extends StatelessWidget {
                       animal.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: TextStyle(
+                        fontSize: context.sp(16),
                         fontWeight: FontWeight.w900,
                         color: Color(0xFF2C2C2C),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.h(4)),
                     Text(
                       '${animal.location}・${animal.shelterName}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
+                      style: TextStyle(
+                        fontSize: context.sp(11),
                         color: Colors.black54,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: context.h(4)),
                     Text(
                       '${animal.ageLabel}・${animal.genderLabel}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 13,
+                      style: TextStyle(
+                        fontSize: context.sp(13),
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF5B5B5B),
                       ),
@@ -282,12 +298,18 @@ class QuickCategoryChip extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          radius: 28,
+          radius: context.r(28),
           backgroundColor: item.background,
           child: Icon(item.icon, color: item.foreground),
         ),
-        const SizedBox(height: 8),
-        Text(item.label, style: const TextStyle(fontWeight: FontWeight.w600)),
+        SizedBox(height: context.h(8)),
+        Text(
+          item.label,
+          style: TextStyle(
+            fontSize: context.sp(13),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -311,7 +333,10 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            fontSize: context.sp(20),
+            fontWeight: FontWeight.w900,
+          ),
         ),
         const Spacer(),
         TextButton(onPressed: onTap, child: Text(actionLabel)),
@@ -338,12 +363,15 @@ class FilterChipCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(context.r(16)),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w(14),
+          vertical: context.h(10),
+        ),
         decoration: BoxDecoration(
           color: selected ? const Color(0xFF4F8A3F) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.r(16)),
           border: Border.all(
             color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFE7E0D6),
           ),
@@ -365,14 +393,17 @@ class TagPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w(10),
+        vertical: context.h(5),
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFFF4F0EA),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        style: TextStyle(fontSize: context.sp(12), fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -387,7 +418,10 @@ class StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w(10),
+        vertical: context.h(5),
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
@@ -395,7 +429,7 @@ class StatusChip extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: context.sp(12),
           fontWeight: FontWeight.w700,
           color: color,
         ),
@@ -425,17 +459,26 @@ class CategoryCard extends StatelessWidget {
       child: Column(
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(context.r(18)),
             child: AnimalImage(
               imagePath: animal.imagePath,
-              height: 110,
+              height: context.h(110),
               width: double.infinity,
             ),
           ),
-          const SizedBox(height: 10),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          Text(count, style: const TextStyle(color: Colors.black54)),
+          SizedBox(height: context.h(10)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: context.sp(13),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          SizedBox(height: context.h(4)),
+          Text(
+            count,
+            style: TextStyle(fontSize: context.sp(12), color: Colors.black54),
+          ),
         ],
       ),
     );
@@ -457,10 +500,11 @@ class CircleIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8),
+      padding: EdgeInsets.only(left: context.w(8)),
       child: GestureDetector(
         onTap: onTap,
         child: CircleAvatar(
+          radius: context.r(20),
           backgroundColor: Colors.white.withValues(alpha: 0.9),
           child: Icon(icon, color: color),
         ),
@@ -486,7 +530,7 @@ class BottomAction extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: CircleAvatar(
-        radius: 27,
+        radius: context.r(27),
         backgroundColor: Colors.white,
         child: Icon(icon, color: color),
       ),
@@ -502,20 +546,20 @@ class InfoTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(context.w(18)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(context.r(22)),
       ),
       child: Column(
         children: rows
             .map(
               (row) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 9),
+                padding: EdgeInsets.symmetric(vertical: context.h(9)),
                 child: Row(
                   children: [
                     SizedBox(
-                      width: 88,
+                      width: context.w(88),
                       child: Text(
                         row[0],
                         style: const TextStyle(color: Colors.black54),
@@ -554,10 +598,10 @@ class TabText extends StatelessWidget {
             color: selected ? const Color(0xFF4F8A3F) : Colors.black54,
           ),
         ),
-        const SizedBox(height: 10),
+        SizedBox(height: context.h(10)),
         Container(
-          width: 28,
-          height: 3,
+          width: context.w(28),
+          height: context.h(3),
           decoration: BoxDecoration(
             color: selected ? const Color(0xFF4F8A3F) : Colors.transparent,
             borderRadius: BorderRadius.circular(999),
@@ -576,7 +620,7 @@ class MapPin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
-      radius: active ? 20 : 18,
+      radius: active ? context.r(20) : context.r(18),
       backgroundColor: active ? const Color(0xFF4F8A3F) : Colors.white,
       child: Icon(
         Icons.pets_rounded,
@@ -598,7 +642,7 @@ class IconInfoRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: const Color(0xFF4F8A3F)),
-        const SizedBox(width: 10),
+        SizedBox(width: context.w(10)),
         Expanded(
           child: Text(
             text,
@@ -619,18 +663,21 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: context.h(16)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(context.r(18)),
       ),
       child: Column(
         children: [
           Text(
             value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              fontSize: context.sp(24),
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: context.h(4)),
           Text(
             label,
             style: const TextStyle(
@@ -652,10 +699,10 @@ class ProfileMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: context.h(12)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(context.r(20)),
       ),
       child: ListTile(
         title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -682,18 +729,22 @@ class AnimalListTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(context.w(12)),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(context.r(20)),
         ),
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: AnimalImage(imagePath: animal.imagePath, width: 78, height: 78),
+              borderRadius: BorderRadius.circular(context.r(14)),
+              child: AnimalImage(
+                imagePath: animal.imagePath,
+                width: context.w(78),
+                height: context.w(78),
+              ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: context.w(12)),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -702,16 +753,16 @@ class AnimalListTile extends StatelessWidget {
                     animal.name,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: context.h(4)),
                   Text(
                     '${animal.location}・${animal.shelterName}',
                     style: const TextStyle(color: Colors.black54),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: context.h(8)),
                   Row(
                     children: [
                       TagPill(label: animal.ageLabel),
-                      const SizedBox(width: 6),
+                      SizedBox(width: context.w(6)),
                       TagPill(label: animal.genderLabel),
                     ],
                   ),
@@ -741,17 +792,20 @@ class LoadingStatePanel extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const SizedBox(
-          width: 56,
-          height: 56,
+        SizedBox(
+          width: context.w(56),
+          height: context.w(56),
           child: CircularProgressIndicator(strokeWidth: 3),
         ),
-        const SizedBox(height: 18),
+        SizedBox(height: context.h(18)),
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            fontSize: context.sp(20),
+            fontWeight: FontWeight.w900,
+          ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.h(8)),
         Text(message, style: const TextStyle(color: Colors.black54)),
       ],
     );
@@ -779,18 +833,21 @@ class ErrorStatePanel extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 62, color: const Color(0xFF5A5A5A)),
-        const SizedBox(height: 18),
+        Icon(icon, size: context.sp(62), color: const Color(0xFF5A5A5A)),
+        SizedBox(height: context.h(18)),
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            fontSize: context.sp(20),
+            fontWeight: FontWeight.w900,
+          ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: context.h(8)),
         Text(message, style: const TextStyle(color: Colors.black54)),
-        const SizedBox(height: 20),
+        SizedBox(height: context.h(20)),
         FilledButton(onPressed: () {}, child: Text(actionLabel)),
         if (secondaryLabel != null) ...[
-          const SizedBox(height: 10),
+          SizedBox(height: context.h(10)),
           OutlinedButton(onPressed: () {}, child: Text(secondaryLabel!)),
         ],
       ],
@@ -806,10 +863,10 @@ class PreviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20),
+      padding: EdgeInsets.symmetric(vertical: context.h(20)),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(context.r(28)),
       ),
       child: child,
     );
@@ -827,9 +884,19 @@ class FilterSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-        const SizedBox(height: 10),
-        Wrap(spacing: 8, runSpacing: 8, children: children),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: context.sp(14),
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        SizedBox(height: context.h(10)),
+        Wrap(
+          spacing: context.w(8),
+          runSpacing: context.h(8),
+          children: children,
+        ),
       ],
     );
   }
@@ -851,12 +918,15 @@ class SelectablePill extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(context.r(12)),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.w(14),
+          vertical: context.h(9),
+        ),
         decoration: BoxDecoration(
           color: selected ? const Color(0xFF4F8A3F) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(context.r(12)),
           border: Border.all(
             color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFD9D3C8),
           ),

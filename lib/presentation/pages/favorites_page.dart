@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/responsive/responsive.dart';
+import '../../core/theme/adoption_theme.dart';
 import '../../domain/models/app_models.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
@@ -17,19 +19,27 @@ class FavoritesPage extends ConsumerWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(16),
+          context.w(20),
+          0,
+        ),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Text(
                   '我的收藏',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    fontSize: context.sp(24),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: context.h(14)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: FavoriteFilter.values
@@ -44,7 +54,7 @@ class FavoritesPage extends ConsumerWidget {
                   )
                   .toList(),
             ),
-            const SizedBox(height: 18),
+            SizedBox(height: context.h(18)),
             Expanded(
               child: animals.isEmpty
                   ? Center(
@@ -63,29 +73,33 @@ class FavoritesPage extends ConsumerWidget {
                     )
                   : ListView.separated(
                       itemCount: animals.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) =>
+                          SizedBox(height: context.h(12)),
                       itemBuilder: (context, index) {
                         final animal = animals[index];
                         return GestureDetector(
                           onTap: () => context.push('/animal/${animal.id}'),
                           child: Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(context.w(12)),
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(22),
+                              color: AdoptionColors.surface,
+                              borderRadius: BorderRadius.circular(
+                                context.r(22),
+                              ),
                             ),
                             child: Row(
                               children: [
                                 ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.asset(
-                                    animal.imagePath,
-                                    width: 88,
-                                    height: 88,
-                                    fit: BoxFit.cover,
+                                  borderRadius: BorderRadius.circular(
+                                    context.r(16),
+                                  ),
+                                  child: AnimalImage(
+                                    imagePath: animal.imagePath,
+                                    width: context.w(88),
+                                    height: context.w(88),
                                   ),
                                 ),
-                                const SizedBox(width: 14),
+                                SizedBox(width: context.w(14)),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -93,22 +107,23 @@ class FavoritesPage extends ConsumerWidget {
                                     children: [
                                       Text(
                                         animal.name,
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: context.sp(18),
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      SizedBox(height: context.h(4)),
                                       Text(
                                         '${animal.location}・${animal.shelterName}',
-                                        style: const TextStyle(
-                                          color: Colors.black54,
+                                        style: TextStyle(
+                                          fontSize: context.sp(13),
+                                          color: AdoptionColors.textMuted,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
+                                      SizedBox(height: context.h(8)),
                                       Wrap(
-                                        spacing: 6,
-                                        runSpacing: 6,
+                                        spacing: context.w(6),
+                                        runSpacing: context.h(6),
                                         children: animal.tags
                                             .map(
                                               (tag) => StatusChip(
@@ -126,7 +141,7 @@ class FavoritesPage extends ConsumerWidget {
                                       controller.toggleFavorite(animal.id),
                                   icon: const Icon(
                                     Icons.favorite_rounded,
-                                    color: Color(0xFFE35D4F),
+                                    color: AdoptionColors.danger,
                                   ),
                                 ),
                               ],

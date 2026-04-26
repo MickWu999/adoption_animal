@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/responsive/responsive.dart';
+import '../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
 
@@ -19,22 +21,27 @@ class HomePage extends ConsumerWidget {
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              padding: EdgeInsets.fromLTRB(
+                context.w(20),
+                context.h(12),
+                context.w(20),
+                context.h(24),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.location_on_rounded,
-                        color: Color(0xFF4F8A3F),
-                        size: 18,
+                        color: AdoptionColors.primary,
+                        size: context.sp(18),
                       ),
-                      const SizedBox(width: 6),
-                      const Text(
+                      SizedBox(width: context.w(6)),
+                      Text(
                         '台南市',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: context.sp(16),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -46,11 +53,11 @@ class HomePage extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: context.h(12)),
                   Container(
-                    height: 126,
+                    height: context.h(126),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
+                      borderRadius: BorderRadius.circular(context.r(26)),
                       image: const DecorationImage(
                         image: AssetImage('assets/images/dog/login_dog.jpg'),
                         fit: BoxFit.cover,
@@ -58,7 +65,7 @@ class HomePage extends ConsumerWidget {
                     ),
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(context.r(26)),
                         gradient: LinearGradient(
                           colors: [
                             Colors.black.withValues(alpha: 0.45),
@@ -66,10 +73,10 @@ class HomePage extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      padding: const EdgeInsets.all(22),
+                      padding: EdgeInsets.all(context.w(22)),
                       child: Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,17 +84,17 @@ class HomePage extends ConsumerWidget {
                                 Text(
                                   '領養代替購買',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
+                                    color: AdoptionColors.surface,
+                                    fontSize: context.sp(28),
                                     fontWeight: FontWeight.w900,
                                   ),
                                 ),
-                                SizedBox(height: 8),
+                                SizedBox(height: context.h(8)),
                                 Text(
                                   '給牠一個溫暖的家',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
+                                    color: AdoptionColors.surface,
+                                    fontSize: context.sp(18),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -95,15 +102,17 @@ class HomePage extends ConsumerWidget {
                             ),
                           ),
                           Container(
-                            width: 48,
-                            height: 48,
+                            width: context.w(48),
+                            height: context.w(48),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.16),
+                              color: AdoptionColors.surface.withValues(
+                                alpha: 0.16,
+                              ),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
                               Icons.favorite_border_rounded,
-                              color: Colors.white,
+                              color: AdoptionColors.surface,
                             ),
                           ),
                         ],
@@ -121,14 +130,14 @@ class HomePage extends ConsumerWidget {
                   //     context.go('/search');
                   //   },
                   // ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: context.h(20)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: state.homeCategories
                         .map((item) => QuickCategoryChip(item: item))
                         .toList(),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: context.h(10)),
                   SectionHeader(
                     title: '最新來的毛孩',
                     actionLabel: '查看更多',
@@ -139,18 +148,19 @@ class HomePage extends ConsumerWidget {
                       context.go('/search');
                     },
                   ),
-                  const SizedBox(height: 6),
+                  SizedBox(height: context.h(6)),
                   SizedBox(
-                    height: 205,
+                    height: context.h(225),
                     child: ListView.separated(
                       scrollDirection: Axis.horizontal,
                       itemCount: latestAnimals.length,
-                      separatorBuilder: (_, _) => const SizedBox(width: 14),
+                      separatorBuilder: (_, _) =>
+                          SizedBox(width: context.w(14)),
                       itemBuilder: (context, index) {
                         final animal = latestAnimals[index];
                         return AnimalCard(
                           animal: animal,
-                          width: 112,
+                          width: context.w(170),
                           onTap: () => context.push('/animal/${animal.id}'),
                           onFavoriteTap: () => ref
                               .read(adoptionControllerProvider.notifier)
@@ -159,30 +169,42 @@ class HomePage extends ConsumerWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: context.h(24)),
                   SectionHeader(
                     title: '熱門藏養 TOP10',
                     actionLabel: '查看更多',
                     onTap: () {},
                   ),
-                  const SizedBox(height: 14),
+                  SizedBox(height: context.h(14)),
                   ...favoriteAnimals.map(
                     (animal) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
+                      padding: EdgeInsets.only(bottom: context.h(12)),
                       child: ListTile(
-                        tileColor: Colors.white,
+                        tileColor: AdoptionColors.surface,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(context.r(20)),
                         ),
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage(animal.imagePath),
+                        leading: SizedBox(
+                          width: context.w(40),
+                          height: context.w(40),
+                          child: ClipOval(
+                            child: AnimalImage(
+                              imagePath: animal.imagePath,
+                              width: context.w(40),
+                              height: context.w(40),
+                            ),
+                          ),
                         ),
                         title: Text(
                           animal.name,
-                          style: const TextStyle(fontWeight: FontWeight.w700),
+                          style: TextStyle(
+                            fontSize: context.sp(15),
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         subtitle: Text(
                           '${animal.location}・${animal.genderLabel}',
+                          style: TextStyle(fontSize: context.sp(13)),
                         ),
                         trailing: const Icon(Icons.chevron_right_rounded),
                         onTap: () => context.push('/animal/${animal.id}'),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/responsive/responsive.dart';
+import '../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
 
@@ -16,21 +18,29 @@ class NearbyPage extends ConsumerWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(16),
+          context.w(20),
+          context.h(20),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
+            Center(
               child: Text(
                 '附近的收容所',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                style: TextStyle(
+                  fontSize: context.sp(24),
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.h(16)),
             Container(
-              height: 230,
+              height: context.h(230),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(context.r(28)),
                 image: const DecorationImage(
                   image: AssetImage('assets/images/shaltar/sheltar.jpg'),
                   fit: BoxFit.cover,
@@ -38,11 +48,11 @@ class NearbyPage extends ConsumerWidget {
               ),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  color: Colors.white.withValues(alpha: 0.22),
+                  borderRadius: BorderRadius.circular(context.r(28)),
+                  color: AdoptionColors.mapOverlay,
                 ),
-                child: Stack(
-                  children: const [
+                child: const Stack(
+                  children: [
                     Positioned(top: 34, left: 56, child: MapPin()),
                     Positioned(top: 72, right: 64, child: MapPin()),
                     Positioned(
@@ -54,56 +64,61 @@ class NearbyPage extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.h(16)),
             Expanded(
               child: ListView.separated(
                 itemCount: shelters.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                separatorBuilder: (_, _) => SizedBox(height: context.h(12)),
                 itemBuilder: (context, index) {
                   final shelter = shelters[index];
                   return GestureDetector(
                     onTap: () => context.push('/shelter/${shelter.id}'),
                     child: Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(context.w(12)),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(22),
+                        color: AdoptionColors.surface,
+                        borderRadius: BorderRadius.circular(context.r(22)),
                       ),
                       child: Row(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.asset(
-                              shelter.imagePath,
-                              width: 82,
-                              height: 82,
-                              fit: BoxFit.cover,
+                            borderRadius: BorderRadius.circular(context.r(16)),
+                            child: AnimalImage(
+                              imagePath: shelter.imagePath,
+                              width: context.w(82),
+                              height: context.w(82),
                             ),
                           ),
-                          const SizedBox(width: 14),
+                          SizedBox(width: context.w(14)),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   shelter.name,
-                                  style: const TextStyle(
+                                  style: TextStyle(
+                                    fontSize: context.sp(15),
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                SizedBox(height: context.h(4)),
                                 Text(
                                   '距離 ${shelter.distance}・${shelter.capacity}',
-                                  style: const TextStyle(color: Colors.black54),
+                                  style: TextStyle(
+                                    fontSize: context.sp(13),
+                                    color: AdoptionColors.textMuted,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                          const CircleAvatar(
-                            backgroundColor: Color(0xFFE8F3E4),
+                          CircleAvatar(
+                            radius: context.r(20),
+                            backgroundColor: AdoptionColors.successSoft,
                             child: Icon(
                               Icons.call_rounded,
-                              color: Color(0xFF4F8A3F),
+                              size: context.sp(18),
+                              color: AdoptionColors.primary,
                             ),
                           ),
                         ],

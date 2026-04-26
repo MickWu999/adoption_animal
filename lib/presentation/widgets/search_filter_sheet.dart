@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/lookups/adoption_lookups.dart';
+import '../../core/theme/adoption_theme.dart';
 import '../../domain/models/app_models.dart';
 
 class FilterBottomSheet extends StatefulWidget {
@@ -70,7 +72,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
       height: sheetHeight,
       child: Container(
         decoration: const BoxDecoration(
-          color: Color(0xFFF7F4EE),
+          color: AdoptionColors.surfaceSoft,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
@@ -84,7 +86,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   width: 48,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFD4CEC4),
+                    color: AdoptionColors.dragHandle,
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -104,7 +106,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     icon: const Icon(Icons.refresh_rounded, size: 18),
                     label: const Text('重設'),
                     style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF4F8A3F),
+                      foregroundColor: AdoptionColors.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 10,
@@ -119,7 +121,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
               const Text(
                 '基礎查詢先縮小範圍，進階查詢可更精準對應 API 欄位。',
                 style: TextStyle(
-                  color: Colors.black54,
+                  color: AdoptionColors.textMuted,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -139,11 +141,10 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         value: _animalAreaPkid,
                         options: [
                           const _ChoiceOption<int>('不限', 0),
-                          ...countyOptions
-                              .map(
-                                (option) =>
-                                    _ChoiceOption<int>(option.label, option.code),
-                              ),
+                          ...countyOptions.map(
+                            (option) =>
+                                _ChoiceOption<int>(option.label, option.code),
+                          ),
                         ],
                         onChanged: (value) => _apply(
                           _filters.copyWith(
@@ -162,16 +163,18 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                               .where(
                                 (option) =>
                                     _filters.animalAreaPkid == 0 ||
-                                    option.countyCode == _filters.animalAreaPkid,
+                                    option.countyCode ==
+                                        _filters.animalAreaPkid,
                               )
                               .map(
-                                (option) =>
-                                    _ChoiceOption<int>(option.label, option.code),
+                                (option) => _ChoiceOption<int>(
+                                  option.label,
+                                  option.code,
+                                ),
                               ),
                         ],
-                        onChanged: (value) => _apply(
-                          _filters.copyWith(animalShelterPkid: value),
-                        ),
+                        onChanged: (value) =>
+                            _apply(_filters.copyWith(animalShelterPkid: value)),
                       ),
                       const SizedBox(height: 10),
                       _DropdownFilterTile<String>(
@@ -366,7 +369,7 @@ class _SectionLabel extends StatelessWidget {
         Text(
           subtitle,
           style: const TextStyle(
-            color: Colors.black54,
+            color: AdoptionColors.textMuted,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -388,7 +391,9 @@ class _SelectionBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: hasSelection ? const Color(0xFFEAF4E7) : const Color(0xFFF4F0EA),
+        color: hasSelection
+            ? AdoptionColors.primarySoft
+            : AdoptionColors.chipBg,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -397,8 +402,8 @@ class _SelectionBadge extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w800,
           color: hasSelection
-              ? const Color(0xFF3F6F32)
-              : const Color(0xFF6A6258),
+              ? AdoptionColors.primaryStrong
+              : AdoptionColors.textSecondary,
         ),
       ),
     );
@@ -417,7 +422,7 @@ class _ActionBar extends StatelessWidget {
       child: FilledButton(
         onPressed: onApply,
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFF4F8A3F),
+          backgroundColor: AdoptionColors.primary,
           minimumSize: const Size.fromHeight(52),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -455,9 +460,9 @@ class _DropdownFilterTile<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE1DACE)),
+        border: Border.all(color: AdoptionColors.border),
       ),
       child: Row(
         children: [
@@ -465,7 +470,7 @@ class _DropdownFilterTile<T> extends StatelessWidget {
             label,
             style: const TextStyle(
               fontWeight: FontWeight.w800,
-              color: Color(0xFF3D3D3D),
+              color: AdoptionColors.textStrong,
             ),
           ),
           const Spacer(),
@@ -549,18 +554,21 @@ class _TextFilterFieldState extends State<_TextFilterField> {
         labelText: widget.label,
         hintText: widget.hintText,
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AdoptionColors.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFE1DACE)),
+          borderSide: const BorderSide(color: AdoptionColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFFE1DACE)),
+          borderSide: const BorderSide(color: AdoptionColors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: Color(0xFF4F8A3F), width: 1.2),
+          borderSide: const BorderSide(
+            color: AdoptionColors.primary,
+            width: 1.2,
+          ),
         ),
       ),
     );

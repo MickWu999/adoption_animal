@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../core/responsive/responsive.dart';
+
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
@@ -18,7 +20,10 @@ class SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            fontSize: context.sp(20),
+            fontWeight: FontWeight.w900,
+          ),
         ),
         const Spacer(),
         TextButton(onPressed: onTap, child: Text(actionLabel)),
