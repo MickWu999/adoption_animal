@@ -11,6 +11,9 @@ class AdoptionState {
     required this.shelters,
     required this.notifications,
     required this.homeCategories,
+    required this.isInitialLoading,
+    required this.isLoadingMore,
+    required this.hasMoreAnimals,
   });
 
   factory AdoptionState.empty({
@@ -26,6 +29,9 @@ class AdoptionState {
       shelters: const [],
       notifications: notifications,
       homeCategories: homeCategories,
+      isInitialLoading: true,
+      isLoadingMore: false,
+      hasMoreAnimals: true,
     );
   }
 
@@ -37,6 +43,9 @@ class AdoptionState {
   final List<Shelter> shelters;
   final List<NoticeItem> notifications;
   final List<HomeCategory> homeCategories;
+  final bool isInitialLoading;
+  final bool isLoadingMore;
+  final bool hasMoreAnimals;
 
   List<Animal> get latestAnimals => animals.take(6).toList();
 
@@ -55,12 +64,12 @@ class AdoptionState {
           animal.location.toLowerCase().contains(query) ||
           animal.animalPlace.toLowerCase().contains(query) ||
           animal.animalFoundplace.toLowerCase().contains(query) ||
-          countyLabelForCode(animal.animalAreaPkid).toLowerCase().contains(
-            query,
-          ) ||
-          shelterLabelForCode(animal.animalShelterPkid).toLowerCase().contains(
-            query,
-          ) ||
+          countyLabelForCode(
+            animal.animalAreaPkid,
+          ).toLowerCase().contains(query) ||
+          shelterLabelForCode(
+            animal.animalShelterPkid,
+          ).toLowerCase().contains(query) ||
           animal.animalKind.toLowerCase().contains(query) ||
           animal.animalVariety.toLowerCase().contains(query) ||
           animal.animalSex.toLowerCase().contains(query) ||
@@ -72,56 +81,7 @@ class AdoptionState {
           animal.animalStatus.toLowerCase().contains(query) ||
           animal.shelterName.toLowerCase().contains(query);
 
-      final matchesArea =
-          searchFilters.animalAreaPkid == 0 ||
-          animal.animalAreaPkid == searchFilters.animalAreaPkid;
-      final matchesShelterPkid =
-          searchFilters.animalShelterPkid == 0 ||
-          animal.animalShelterPkid == searchFilters.animalShelterPkid;
-      final matchesKind =
-          searchFilters.animalKind.isEmpty ||
-          animal.animalKind == searchFilters.animalKind;
-      final matchesVariety =
-          searchFilters.animalVariety.isEmpty ||
-          animal.animalVariety.toLowerCase().contains(
-            searchFilters.animalVariety.toLowerCase(),
-          );
-      final matchesSex =
-          searchFilters.animalSex.isEmpty ||
-          animal.animalSex == searchFilters.animalSex;
-      final matchesBodytype =
-          searchFilters.animalBodytype.isEmpty ||
-          animal.animalBodytype == searchFilters.animalBodytype;
-      final matchesColour =
-          searchFilters.animalColour.isEmpty ||
-          animal.animalColour.toLowerCase().contains(
-            searchFilters.animalColour.toLowerCase(),
-          );
-      final matchesAge =
-          searchFilters.animalAge.isEmpty ||
-          animal.animalAge == searchFilters.animalAge;
-      final matchesSterilization =
-          searchFilters.animalSterilization.isEmpty ||
-          animal.animalSterilization == searchFilters.animalSterilization;
-      final matchesBacterin =
-          searchFilters.animalBacterin.isEmpty ||
-          animal.animalBacterin == searchFilters.animalBacterin;
-      final matchesStatus =
-          searchFilters.animalStatus.isEmpty ||
-          animal.animalStatus == searchFilters.animalStatus;
-
-      return matchesQuery &&
-          matchesArea &&
-          matchesShelterPkid &&
-          matchesKind &&
-          matchesVariety &&
-          matchesSex &&
-          matchesBodytype &&
-          matchesColour &&
-          matchesAge &&
-          matchesSterilization &&
-          matchesBacterin &&
-          matchesStatus;
+      return matchesQuery;
     }).toList();
     return filtered;
   }
@@ -196,7 +156,8 @@ class AdoptionState {
     if (animal == null) {
       return null;
     }
-    final shelter = shelterById(animal.shelterId) ??
+    final shelter =
+        shelterById(animal.shelterId) ??
         shelterByName(animal.shelterName) ??
         _shelterFromAnimal(animal);
     return shelter;
@@ -229,6 +190,9 @@ class AdoptionState {
     FavoriteFilter? favoriteFilter,
     List<Animal>? animals,
     List<Shelter>? shelters,
+    bool? isInitialLoading,
+    bool? isLoadingMore,
+    bool? hasMoreAnimals,
   }) {
     return AdoptionState(
       currentTab: currentTab ?? this.currentTab,
@@ -239,6 +203,9 @@ class AdoptionState {
       shelters: shelters ?? this.shelters,
       notifications: notifications,
       homeCategories: homeCategories,
+      isInitialLoading: isInitialLoading ?? this.isInitialLoading,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasMoreAnimals: hasMoreAnimals ?? this.hasMoreAnimals,
     );
   }
 }
@@ -317,7 +284,8 @@ Shelter? _shelterFromAnimal(Animal? animal) {
     return null;
   }
 
-  final shelterPkid = int.tryParse(animal.shelterId) ?? animal.animalShelterPkid;
+  final shelterPkid =
+      int.tryParse(animal.shelterId) ?? animal.animalShelterPkid;
   return Shelter(
     id: shelterPkid == 0 ? animal.shelterId : shelterPkid.toString(),
     shelterPkid: shelterPkid,

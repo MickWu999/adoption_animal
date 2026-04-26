@@ -152,6 +152,13 @@ class Animal {
   }
 }
 
+class AnimalPage {
+  const AnimalPage({required this.items, required this.hasMore});
+
+  final List<Animal> items;
+  final bool hasMore;
+}
+
 class Shelter {
   const Shelter({
     required this.id,

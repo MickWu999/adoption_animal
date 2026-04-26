@@ -59,7 +59,7 @@ class HomePage extends ConsumerWidget {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(context.r(26)),
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/dog/login_dog.jpg'),
+                        image: AssetImage('assets/logo.png'),
                         fit: BoxFit.cover,
                       ),
                     ),

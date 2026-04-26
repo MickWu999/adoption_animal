@@ -5,6 +5,9 @@ class AnimalApiMapper {
   const AnimalApiMapper();
 
   static Animal fromJson(Map<String, dynamic> json) {
+    // Supabase 接點 9:
+    // 這裡負責把資料來源的原始欄位轉成 app 內部使用的 Animal model。
+    // 若 Supabase 欄位命名不同，優先調整這層或另外新增 Supabase mapper。
     final animalAreaPkid = _asInt(json['animal_area_pkid']);
     final animalShelterPkid = _asInt(json['animal_shelter_pkid']);
     final animalKind = _asString(json['animal_kind']);
@@ -34,9 +37,7 @@ class AnimalApiMapper {
     final shelterId = animalShelterPkid == 0
         ? 'remote-$animalAreaPkid'
         : animalShelterPkid.toString();
-    final imagePath = albumFile.isNotEmpty
-        ? albumFile
-        : 'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg';
+    final imagePath = albumFile;
     final type = animalKind == '貓'
         ? AnimalType.cat
         : animalKind == '狗'
@@ -79,6 +80,9 @@ class AnimalApiMapper {
   }
 
   static List<Shelter> sheltersFromAnimals(List<Animal> animals) {
+    // Supabase 接點 10:
+    // 如果之後 shelter 也改成獨立資料表，這段可以改成直接由 shelter query 建立 model，
+    // 不一定要再從 animal 清單反推。
     final sheltersById = <String, Shelter>{};
     for (final animal in animals) {
       final key = animal.animalShelterPkid != 0

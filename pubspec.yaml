@@ -62,11 +62,11 @@ flutter:
 
   assets:
     - assets/logo.png
-    - assets/images/logo.png
-    - assets/images/dog/
-    - assets/images/cat/
-    - assets/images/shaltar/
-    - assets/images/others_animals/
+    # - assets/images/logo.png
+    # - assets/images/dog/
+    # - assets/images/cat/
+    # - assets/images/shaltar/
+    # - assets/images/others_animals/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

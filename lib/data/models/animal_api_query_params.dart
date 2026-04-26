@@ -28,6 +28,9 @@ class AnimalApiQueryParams {
     int top = 1000,
     int skip = 0,
   }) {
+    // Supabase 接點 7:
+    // 這層是 UI 篩選條件與資料來源查詢條件的轉換點。
+    // 若未來欄位名稱改成 Supabase schema，可優先在這裡或 repository 內統一映射。
     return AnimalApiQueryParams(
       top: top,
       skip: skip,
@@ -66,10 +69,10 @@ class AnimalApiQueryParams {
   final String shelterName;
 
   Map<String, dynamic> toQueryParameters() {
-    final params = <String, dynamic>{
-      r'$top': top,
-      r'$skip': skip,
-    };
+    // Supabase 接點 8:
+    // 這個方法是給目前 REST API 用的。
+    // 若切到 Supabase，通常不會再用 queryParameters，而是把這些欄位改成 query.where/eq/ilike/range。
+    final params = <String, dynamic>{r'$top': top, r'$skip': skip};
 
     void putIfNotEmpty(String key, Object value) {
       if (value is String && value.isNotEmpty) {

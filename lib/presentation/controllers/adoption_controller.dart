@@ -9,6 +9,9 @@ import '../../domain/models/app_models.dart';
 import 'adoption_state.dart';
 
 final adoptionRepositoryProvider = Provider<AdoptionRepository>((ref) {
+  // Supabase 接點 1:
+  // 之後可在這裡把 RemoteAdoptionRepository 換成 SupabaseAdoptionRepository，
+  // UI 與 controller 會繼續走同一套 fetchAnimals / pagination 流程。
   return RemoteAdoptionRepository();
 });
 
@@ -42,6 +45,8 @@ final animalsForShelterProvider = Provider.family<List<Animal>, String>((
 });
 
 class AdoptionController extends Notifier<AdoptionState> {
+  static const int _pageSize = 20;
+
   bool _didBootstrapAnimals = false;
   int _fetchToken = 0;
 
@@ -50,7 +55,9 @@ class AdoptionController extends Notifier<AdoptionState> {
     final repository = ref.read(adoptionRepositoryProvider);
     if (!_didBootstrapAnimals) {
       _didBootstrapAnimals = true;
-      unawaited(_refreshAnimals(repository, AnimalSearchParams.defaults()));
+      Future<void>(() async {
+        await _refreshAnimals(repository, AnimalSearchParams.defaults());
+      });
     }
     return AdoptionState.empty(
       homeCategories: repository.getHomeCategories(),
@@ -107,27 +114,89 @@ class AdoptionController extends Notifier<AdoptionState> {
     state = state.copyWith(animals: animals);
   }
 
-  Future<void> _refreshAnimals(
-    AdoptionRepository repository,
-    AnimalSearchParams searchFilters,
-  ) async {
-    final requestToken = ++_fetchToken;
-    final params = AnimalApiQueryParams.fromSearchParams(searchFilters);
+  Future<void> loadNextPage() async {
+    if (state.isInitialLoading ||
+        state.isLoadingMore ||
+        !state.hasMoreAnimals) {
+      return;
+    }
+
+    final requestToken = _fetchToken;
+    final repository = ref.read(adoptionRepositoryProvider);
+    // Supabase 接點 2:
+    // 這裡只負責組出分頁與篩選條件，實際要怎麼查資料表交給 repository。
+    // 如果改成 Supabase，通常只需要保留 params 的概念，並在 repository 內轉成 query builder。
+    final params = AnimalApiQueryParams.fromSearchParams(
+      state.searchFilters,
+      top: _pageSize,
+      skip: state.animals.length,
+    );
+
+    state = state.copyWith(isLoadingMore: true);
 
     try {
-      final animals = await repository.fetchAnimals(params);
+      final page = await repository.fetchAnimals(params);
       if (requestToken != _fetchToken) {
         return;
       }
+
+      final mergedAnimals = [...state.animals, ...page.items];
       state = state.copyWith(
-        animals: animals,
-        shelters: AnimalApiMapper.sheltersFromAnimals(animals),
+        animals: mergedAnimals,
+        shelters: AnimalApiMapper.sheltersFromAnimals(mergedAnimals),
+        isLoadingMore: false,
+        hasMoreAnimals: page.hasMore,
       );
     } catch (_) {
       if (requestToken != _fetchToken) {
         return;
       }
+      state = state.copyWith(isLoadingMore: false);
     }
   }
 
+  Future<void> _refreshAnimals(
+    AdoptionRepository repository,
+    AnimalSearchParams searchFilters,
+  ) async {
+    final requestToken = ++_fetchToken;
+    // Supabase 接點 3:
+    // 首次載入與套用篩選都會走這裡；若改成 Supabase，controller 不需要改查詢細節，
+    // 只要 repository.fetchAnimals(params) 能回傳同樣的 AnimalPage 即可。
+    final params = AnimalApiQueryParams.fromSearchParams(
+      searchFilters,
+      top: _pageSize,
+    );
+
+    state = state.copyWith(
+      animals: const [],
+      shelters: const [],
+      isInitialLoading: true,
+      isLoadingMore: false,
+      hasMoreAnimals: true,
+    );
+
+    try {
+      final page = await repository.fetchAnimals(params);
+      if (requestToken != _fetchToken) {
+        return;
+      }
+      state = state.copyWith(
+        animals: page.items,
+        shelters: AnimalApiMapper.sheltersFromAnimals(page.items),
+        isInitialLoading: false,
+        isLoadingMore: false,
+        hasMoreAnimals: page.hasMore,
+      );
+    } catch (_) {
+      if (requestToken != _fetchToken) {
+        return;
+      }
+      state = state.copyWith(
+        isInitialLoading: false,
+        isLoadingMore: false,
+        hasMoreAnimals: false,
+      );
+    }
+  }
 }

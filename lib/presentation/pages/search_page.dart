@@ -15,6 +15,35 @@ class SearchPage extends ConsumerStatefulWidget {
 }
 
 class _SearchPageState extends ConsumerState<SearchPage> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_handleScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_handleScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _handleScroll() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
+
+    final position = _scrollController.position;
+    if (position.pixels < position.maxScrollExtent - 240) {
+      return;
+    }
+
+    ref.read(adoptionControllerProvider.notifier).loadNextPage();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(adoptionControllerProvider);
@@ -93,7 +122,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             const SizedBox(height: 18),
             Expanded(
-              child: results.isEmpty
+              child: state.isInitialLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : results.isEmpty
                   ? Center(
                       child: EmptyStatePanel(
                         imagePath:
@@ -105,42 +136,63 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         icon: Icons.search_off_rounded,
                       ),
                     )
-                  : ListView(
+                  : ListView.builder(
+                      controller: _scrollController,
                       padding: const EdgeInsets.only(bottom: 24),
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              hasActiveFilters
-                                  ? '共 ${results.length} 隻符合條件'
-                                  : '全部毛孩 (${results.length})',
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                              ),
+                      itemCount: results.length + 2,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                Text(
+                                  hasActiveFilters
+                                      ? '已載入 ${results.length} 隻符合條件'
+                                      : '全部毛孩 (${results.length})',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const Spacer(),
+                                if (hasActiveFilters)
+                                  TextButton(
+                                    onPressed: controller.resetSearch,
+                                    child: const Text('清除'),
+                                  ),
+                              ],
                             ),
-                            const Spacer(),
-                            if (hasActiveFilters)
-                              TextButton(
-                                onPressed: controller.resetSearch,
-                                child: const Text('清除'),
-                              ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        ...results.map(
-                          (animal) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: AnimalCard(
-                              animal: animal,
-                              onTap: () => context.push('/animal/${animal.id}'),
-                              onFavoriteTap: () => ref
-                                  .read(adoptionControllerProvider.notifier)
-                                  .toggleFavorite(animal.id),
-                            ),
+                          );
+                        }
+
+                        if (index == results.length + 1) {
+                          if (state.isLoadingMore) {
+                            return const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Center(child: CircularProgressIndicator()),
+                            );
+                          }
+
+                          if (!state.hasMoreAnimals) {
+                            return const SizedBox(height: 8);
+                          }
+
+                          return const SizedBox.shrink();
+                        }
+
+                        final animal = results[index - 1];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: AnimalCard(
+                            animal: animal,
+                            onTap: () => context.push('/animal/${animal.id}'),
+                            onFavoriteTap: () => ref
+                                .read(adoptionControllerProvider.notifier)
+                                .toggleFavorite(animal.id),
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
             ),
           ],

@@ -65,6 +65,10 @@ class AnimalImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imagePath.trim().isEmpty) {
+      return _fallbackImage();
+    }
+
     final image = imagePath.startsWith('http')
         ? Image.network(
             imagePath,
@@ -80,6 +84,9 @@ class AnimalImage extends StatelessWidget {
             width: width,
             height: height,
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _fallbackImage();
+            },
           );
 
     return image;
