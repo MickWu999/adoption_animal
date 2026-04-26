@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/responsive/responsive.dart';
 import '../../domain/models/app_models.dart';
@@ -75,6 +76,12 @@ class AnimalImage extends StatelessWidget {
             width: width,
             height: height,
             fit: BoxFit.cover,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+              return _loadingImage();
+            },
             errorBuilder: (context, error, stackTrace) {
               return _fallbackImage();
             },
@@ -84,12 +91,30 @@ class AnimalImage extends StatelessWidget {
             width: width,
             height: height,
             fit: BoxFit.cover,
+            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded || frame != null) {
+                return child;
+              }
+              return _loadingImage();
+            },
             errorBuilder: (context, error, stackTrace) {
               return _fallbackImage();
             },
           );
 
     return image;
+  }
+
+  Widget _loadingImage() {
+    return Shimmer.fromColors(
+      baseColor: const Color(0xFFF1ECE5),
+      highlightColor: const Color(0xFFF9F6F2),
+      child: Container(
+        width: width,
+        height: height,
+        color: const Color(0xFFF1ECE5),
+      ),
+    );
   }
 
   Widget _fallbackImage() {
