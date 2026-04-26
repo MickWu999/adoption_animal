@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../domain/models/app_models.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
+import '../widgets/search_sections.dart';
 import '../widgets/search_filter_sheet.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
@@ -92,37 +92,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
             const SizedBox(height: 16),
             if (state.shouldShowSearchFilterBar)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: FilterChipCard(
-                        label: '篩選',
-                        selected: true,
-                        onTap: () =>
-                            _openFilterSheet(context, state.searchFilters),
-                      ),
-                    ),
-                    ...state.activeFilterLabels.map(
-                      (label) => Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: FilterChipCard(
-                          label: label,
-                          selected: true,
-                          onTap: () =>
-                              _openFilterSheet(context, state.searchFilters),
-                        ),
-                      ),
-                    ),
-                    FilterChipCard(
-                      label: '清除',
-                      selected: false,
-                      onTap: controller.resetSearch,
-                    ),
-                  ],
-                ),
+              SearchFilterBar(
+                labels: state.activeFilterLabels,
+                searchFilters: state.searchFilters,
+                onOpenFilters: (filters) => _openFilterSheet(context, filters),
+                onReset: controller.resetSearch,
               ),
             const SizedBox(height: 18),
             Expanded(
@@ -140,61 +114,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         icon: Icons.search_off_rounded,
                       ),
                     )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.only(bottom: 24),
-                      itemCount: state.searchListItemCount,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              children: [
-                                Text(
-                                  state.searchResultsHeadline,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                                const Spacer(),
-                                if (state.shouldShowSearchClearAction)
-                                  TextButton(
-                                    onPressed: controller.resetSearch,
-                                    child: const Text('清除'),
-                                  ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        if (index == results.length + 1) {
-                          if (state.shouldShowSearchLoadMoreIndicator) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12),
-                              child: Center(child: CircularProgressIndicator()),
-                            );
-                          }
-
-                          if (state.shouldShowSearchLoadMoreTerminator) {
-                            return const SizedBox(height: 8);
-                          }
-
-                          return const SizedBox.shrink();
-                        }
-
-                        final animal = results[index - 1];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: AnimalCard(
-                            animal: animal,
-                            onTap: () => context.push('/animal/${animal.id}'),
-                            onFavoriteTap: () => ref
-                                .read(adoptionControllerProvider.notifier)
-                                .toggleFavorite(animal.id),
-                          ),
-                        );
-                      },
+                  : SearchResultsList(
+                      scrollController: _scrollController,
+                      results: results,
+                      resultsHeadline: state.searchResultsHeadline,
+                      shouldShowClearAction: state.shouldShowSearchClearAction,
+                      shouldShowLoadMoreIndicator:
+                          state.shouldShowSearchLoadMoreIndicator,
+                      shouldShowLoadMoreTerminator:
+                          state.shouldShowSearchLoadMoreTerminator,
+                      onReset: controller.resetSearch,
+                      onToggleFavorite: controller.toggleFavorite,
                     ),
             ),
           ],

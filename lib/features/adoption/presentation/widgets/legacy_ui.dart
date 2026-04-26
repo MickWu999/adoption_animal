@@ -6,6 +6,15 @@ import '../../domain/models/app_models.dart';
 
 void noop() {}
 
+class AdoptionImageStyle {
+  const AdoptionImageStyle._();
+
+  static const placeholder = Color(0xFFF1ECE5);
+  static const highlight = Color(0xFFF9F6F2);
+  static const fallback = Color(0xFFF4F0EA);
+  static const fallbackIcon = Color(0xFF9F9488);
+}
+
 class RoundedSearchField extends StatelessWidget {
   const RoundedSearchField({
     super.key,
@@ -107,12 +116,12 @@ class AnimalImage extends StatelessWidget {
 
   Widget _loadingImage() {
     return Shimmer.fromColors(
-      baseColor: const Color(0xFFF1ECE5),
-      highlightColor: const Color(0xFFF9F6F2),
+      baseColor: AdoptionImageStyle.placeholder,
+      highlightColor: AdoptionImageStyle.highlight,
       child: Container(
         width: width,
         height: height,
-        color: const Color(0xFFF1ECE5),
+        color: AdoptionImageStyle.placeholder,
       ),
     );
   }
@@ -121,9 +130,35 @@ class AnimalImage extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      color: const Color(0xFFF4F0EA),
+      color: AdoptionImageStyle.fallback,
       alignment: Alignment.center,
-      child: const Icon(Icons.pets_rounded, color: Color(0xFF9F9488)),
+      child: const Icon(
+        Icons.pets_rounded,
+        color: AdoptionImageStyle.fallbackIcon,
+      ),
+    );
+  }
+}
+
+class AdoptionImageFrame extends StatelessWidget {
+  const AdoptionImageFrame({
+    super.key,
+    required this.imagePath,
+    required this.borderRadius,
+    this.width,
+    this.height,
+  });
+
+  final String imagePath;
+  final BorderRadius borderRadius;
+  final double? width;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: borderRadius,
+      child: AnimalImage(imagePath: imagePath, width: width, height: height),
     );
   }
 }

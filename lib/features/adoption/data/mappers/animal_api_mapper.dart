@@ -1,38 +1,39 @@
 import '../../../../core/lookups/adoption_lookups.dart';
 import '../../domain/models/app_models.dart';
+import '../models/animal_api_response.dart';
 
 class AnimalApiMapper {
   const AnimalApiMapper();
 
-  static Animal fromJson(Map<String, dynamic> json) {
+  static Animal fromResponse(AnimalApiResponse response) {
     // Supabase 接點 9:
     // 這裡負責把資料來源的原始欄位轉成 app 內部使用的 Animal model。
     // 若 Supabase 欄位命名不同，優先調整這層或另外新增 Supabase mapper。
-    final animalAreaPkid = _asInt(json['animal_area_pkid']);
-    final animalShelterPkid = _asInt(json['animal_shelter_pkid']);
-    final animalKind = _asString(json['animal_kind']);
-    final animalVariety = _asString(json['animal_Variety']);
-    final animalSex = _asString(json['animal_sex']);
-    final animalBodytype = _asString(json['animal_bodytype']);
-    final animalColour = _asString(json['animal_colour']);
-    final animalAge = _asString(json['animal_age']);
-    final animalSterilization = _asString(json['animal_sterilization']);
-    final animalBacterin = _asString(json['animal_bacterin']);
-    final animalStatus = _asString(json['animal_status']);
-    final animalTitle = _asString(json['animal_title']);
-    final albumFile = _asString(json['album_file']);
-    final shelterName = _asString(json['shelter_name']);
-    final shelterAddress = _asString(json['shelter_address']);
-    final shelterTel = _asString(json['shelter_tel']);
-    final animalCode = _asString(json['animal_id']);
+    final animalAreaPkid = response.animalAreaPkid;
+    final animalShelterPkid = response.animalShelterPkid;
+    final animalKind = response.animalKind;
+    final animalVariety = response.animalVariety;
+    final animalSex = response.animalSex;
+    final animalBodytype = response.animalBodytype;
+    final animalColour = response.animalColour;
+    final animalAge = response.animalAge;
+    final animalSterilization = response.animalSterilization;
+    final animalBacterin = response.animalBacterin;
+    final animalStatus = response.animalStatus;
+    final animalTitle = response.animalTitle;
+    final albumFile = response.albumFile;
+    final shelterName = response.shelterName;
+    final shelterAddress = response.shelterAddress;
+    final shelterTel = response.shelterTel;
+    final animalCode = response.animalId;
 
     final name = animalTitle.isNotEmpty
         ? animalTitle
         : animalVariety.isNotEmpty
         ? animalVariety
-        : _asString(json['animal_subid']);
-    final location = _asString(json['animal_place']).isNotEmpty
-        ? _asString(json['animal_place'])
+        : response.animalSubid;
+    final location = response.animalPlace.isNotEmpty
+        ? response.animalPlace
         : countyLabelForCode(animalAreaPkid);
     final shelterId = animalShelterPkid == 0
         ? 'remote-$animalAreaPkid'
@@ -47,10 +48,10 @@ class AnimalApiMapper {
     return Animal(
       id: '$animalCode-$animalShelterPkid',
       animalId: animalCode,
-      animalSubid: _asString(json['animal_subid']),
+      animalSubid: response.animalSubid,
       animalAreaPkid: animalAreaPkid,
       animalShelterPkid: animalShelterPkid,
-      animalPlace: _asString(json['animal_place']),
+      animalPlace: response.animalPlace,
       animalKind: animalKind,
       animalVariety: animalVariety,
       animalSex: animalSex,
@@ -59,9 +60,9 @@ class AnimalApiMapper {
       animalAge: animalAge,
       animalSterilization: animalSterilization,
       animalBacterin: animalBacterin,
-      animalFoundplace: _asString(json['animal_foundplace']),
+      animalFoundplace: response.animalFoundplace,
       animalStatus: animalStatus,
-      animalOpendate: _asString(json['animal_opendate']),
+      animalOpendate: response.animalOpendate,
       name: name,
       imagePath: imagePath,
       location: location,
@@ -104,15 +105,6 @@ class AnimalApiMapper {
       );
     }
     return sheltersById.values.toList(growable: false);
-  }
-
-  static String _asString(dynamic value) => value?.toString() ?? '';
-
-  static int _asInt(dynamic value) {
-    if (value is int) {
-      return value;
-    }
-    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 
   static String _displaySex(String value) {

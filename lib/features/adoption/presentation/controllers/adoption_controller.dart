@@ -5,9 +5,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/mappers/animal_api_mapper.dart';
 import '../../data/models/animal_api_query_params.dart';
-import '../../data/repositories/mock_adoption_repository.dart';
+import '../../data/repositories/adoption_repository.dart';
+import '../../data/repositories/remote_adoption_repository.dart';
 import '../../domain/models/app_models.dart';
 import 'adoption_state.dart';
+import 'load_phase.dart';
 
 part 'adoption_controller.g.dart';
 
@@ -132,7 +134,7 @@ class AdoptionController extends _$AdoptionController {
       skip: state.animals.length,
     );
 
-    state = state.copyWith(isLoadingMore: true);
+    state = state.copyWith(paginationLoadPhase: LoadPhase.loading);
 
     try {
       final page = await repository.fetchAnimals(params);
@@ -144,14 +146,14 @@ class AdoptionController extends _$AdoptionController {
       state = state.copyWith(
         animals: mergedAnimals,
         shelters: AnimalApiMapper.sheltersFromAnimals(mergedAnimals),
-        isLoadingMore: false,
+        paginationLoadPhase: LoadPhase.success,
         hasMoreAnimals: page.hasMore,
       );
     } catch (_) {
       if (requestToken != _fetchToken) {
         return;
       }
-      state = state.copyWith(isLoadingMore: false);
+      state = state.copyWith(paginationLoadPhase: LoadPhase.error);
     }
   }
 
@@ -171,8 +173,8 @@ class AdoptionController extends _$AdoptionController {
     state = state.copyWith(
       animals: const [],
       shelters: const [],
-      isInitialLoading: true,
-      isLoadingMore: false,
+      initialLoadPhase: LoadPhase.loading,
+      paginationLoadPhase: LoadPhase.idle,
       hasMoreAnimals: true,
     );
 
@@ -184,8 +186,10 @@ class AdoptionController extends _$AdoptionController {
       state = state.copyWith(
         animals: page.items,
         shelters: AnimalApiMapper.sheltersFromAnimals(page.items),
-        isInitialLoading: false,
-        isLoadingMore: false,
+        initialLoadPhase: page.items.isEmpty
+            ? LoadPhase.empty
+            : LoadPhase.success,
+        paginationLoadPhase: LoadPhase.idle,
         hasMoreAnimals: page.hasMore,
       );
     } catch (_) {
@@ -193,8 +197,8 @@ class AdoptionController extends _$AdoptionController {
         return;
       }
       state = state.copyWith(
-        isInitialLoading: false,
-        isLoadingMore: false,
+        initialLoadPhase: LoadPhase.error,
+        paginationLoadPhase: LoadPhase.idle,
         hasMoreAnimals: false,
       );
     }

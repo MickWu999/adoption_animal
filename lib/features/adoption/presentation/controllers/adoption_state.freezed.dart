@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AdoptionState {
 
- int get currentTab; String get searchQuery; AnimalSearchParams get searchFilters; FavoriteFilter get favoriteFilter; List<Animal> get animals; List<Shelter> get shelters; List<NoticeItem> get notifications; List<HomeCategory> get homeCategories; bool get isInitialLoading; bool get isLoadingMore; bool get hasMoreAnimals;
+ int get currentTab; String get searchQuery; AnimalSearchParams get searchFilters; FavoriteFilter get favoriteFilter; List<Animal> get animals; List<Shelter> get shelters; List<NoticeItem> get notifications; List<HomeCategory> get homeCategories; LoadPhase get initialLoadPhase; LoadPhase get paginationLoadPhase; bool get hasMoreAnimals;
 /// Create a copy of AdoptionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AdoptionStateCopyWith<AdoptionState> get copyWith => _$AdoptionStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdoptionState&&(identical(other.currentTab, currentTab) || other.currentTab == currentTab)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.searchFilters, searchFilters) || other.searchFilters == searchFilters)&&(identical(other.favoriteFilter, favoriteFilter) || other.favoriteFilter == favoriteFilter)&&const DeepCollectionEquality().equals(other.animals, animals)&&const DeepCollectionEquality().equals(other.shelters, shelters)&&const DeepCollectionEquality().equals(other.notifications, notifications)&&const DeepCollectionEquality().equals(other.homeCategories, homeCategories)&&(identical(other.isInitialLoading, isInitialLoading) || other.isInitialLoading == isInitialLoading)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.hasMoreAnimals, hasMoreAnimals) || other.hasMoreAnimals == hasMoreAnimals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AdoptionState&&(identical(other.currentTab, currentTab) || other.currentTab == currentTab)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.searchFilters, searchFilters) || other.searchFilters == searchFilters)&&(identical(other.favoriteFilter, favoriteFilter) || other.favoriteFilter == favoriteFilter)&&const DeepCollectionEquality().equals(other.animals, animals)&&const DeepCollectionEquality().equals(other.shelters, shelters)&&const DeepCollectionEquality().equals(other.notifications, notifications)&&const DeepCollectionEquality().equals(other.homeCategories, homeCategories)&&(identical(other.initialLoadPhase, initialLoadPhase) || other.initialLoadPhase == initialLoadPhase)&&(identical(other.paginationLoadPhase, paginationLoadPhase) || other.paginationLoadPhase == paginationLoadPhase)&&(identical(other.hasMoreAnimals, hasMoreAnimals) || other.hasMoreAnimals == hasMoreAnimals));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentTab,searchQuery,searchFilters,favoriteFilter,const DeepCollectionEquality().hash(animals),const DeepCollectionEquality().hash(shelters),const DeepCollectionEquality().hash(notifications),const DeepCollectionEquality().hash(homeCategories),isInitialLoading,isLoadingMore,hasMoreAnimals);
+int get hashCode => Object.hash(runtimeType,currentTab,searchQuery,searchFilters,favoriteFilter,const DeepCollectionEquality().hash(animals),const DeepCollectionEquality().hash(shelters),const DeepCollectionEquality().hash(notifications),const DeepCollectionEquality().hash(homeCategories),initialLoadPhase,paginationLoadPhase,hasMoreAnimals);
 
 @override
 String toString() {
-  return 'AdoptionState(currentTab: $currentTab, searchQuery: $searchQuery, searchFilters: $searchFilters, favoriteFilter: $favoriteFilter, animals: $animals, shelters: $shelters, notifications: $notifications, homeCategories: $homeCategories, isInitialLoading: $isInitialLoading, isLoadingMore: $isLoadingMore, hasMoreAnimals: $hasMoreAnimals)';
+  return 'AdoptionState(currentTab: $currentTab, searchQuery: $searchQuery, searchFilters: $searchFilters, favoriteFilter: $favoriteFilter, animals: $animals, shelters: $shelters, notifications: $notifications, homeCategories: $homeCategories, initialLoadPhase: $initialLoadPhase, paginationLoadPhase: $paginationLoadPhase, hasMoreAnimals: $hasMoreAnimals)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $AdoptionStateCopyWith<$Res>  {
   factory $AdoptionStateCopyWith(AdoptionState value, $Res Function(AdoptionState) _then) = _$AdoptionStateCopyWithImpl;
 @useResult
 $Res call({
- int currentTab, String searchQuery, AnimalSearchParams searchFilters, FavoriteFilter favoriteFilter, List<Animal> animals, List<Shelter> shelters, List<NoticeItem> notifications, List<HomeCategory> homeCategories, bool isInitialLoading, bool isLoadingMore, bool hasMoreAnimals
+ int currentTab, String searchQuery, AnimalSearchParams searchFilters, FavoriteFilter favoriteFilter, List<Animal> animals, List<Shelter> shelters, List<NoticeItem> notifications, List<HomeCategory> homeCategories, LoadPhase initialLoadPhase, LoadPhase paginationLoadPhase, bool hasMoreAnimals
 });
 
 
-
+$AnimalSearchParamsCopyWith<$Res> get searchFilters;
 
 }
 /// @nodoc
@@ -62,7 +62,7 @@ class _$AdoptionStateCopyWithImpl<$Res>
 
 /// Create a copy of AdoptionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentTab = null,Object? searchQuery = null,Object? searchFilters = null,Object? favoriteFilter = null,Object? animals = null,Object? shelters = null,Object? notifications = null,Object? homeCategories = null,Object? isInitialLoading = null,Object? isLoadingMore = null,Object? hasMoreAnimals = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentTab = null,Object? searchQuery = null,Object? searchFilters = null,Object? favoriteFilter = null,Object? animals = null,Object? shelters = null,Object? notifications = null,Object? homeCategories = null,Object? initialLoadPhase = null,Object? paginationLoadPhase = null,Object? hasMoreAnimals = null,}) {
   return _then(_self.copyWith(
 currentTab: null == currentTab ? _self.currentTab : currentTab // ignore: cast_nullable_to_non_nullable
 as int,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -72,13 +72,22 @@ as FavoriteFilter,animals: null == animals ? _self.animals : animals // ignore: 
 as List<Animal>,shelters: null == shelters ? _self.shelters : shelters // ignore: cast_nullable_to_non_nullable
 as List<Shelter>,notifications: null == notifications ? _self.notifications : notifications // ignore: cast_nullable_to_non_nullable
 as List<NoticeItem>,homeCategories: null == homeCategories ? _self.homeCategories : homeCategories // ignore: cast_nullable_to_non_nullable
-as List<HomeCategory>,isInitialLoading: null == isInitialLoading ? _self.isInitialLoading : isInitialLoading // ignore: cast_nullable_to_non_nullable
-as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
-as bool,hasMoreAnimals: null == hasMoreAnimals ? _self.hasMoreAnimals : hasMoreAnimals // ignore: cast_nullable_to_non_nullable
+as List<HomeCategory>,initialLoadPhase: null == initialLoadPhase ? _self.initialLoadPhase : initialLoadPhase // ignore: cast_nullable_to_non_nullable
+as LoadPhase,paginationLoadPhase: null == paginationLoadPhase ? _self.paginationLoadPhase : paginationLoadPhase // ignore: cast_nullable_to_non_nullable
+as LoadPhase,hasMoreAnimals: null == hasMoreAnimals ? _self.hasMoreAnimals : hasMoreAnimals // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
-
+/// Create a copy of AdoptionState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AnimalSearchParamsCopyWith<$Res> get searchFilters {
+  
+  return $AnimalSearchParamsCopyWith<$Res>(_self.searchFilters, (value) {
+    return _then(_self.copyWith(searchFilters: value));
+  });
+}
 }
 
 
@@ -157,10 +166,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  bool isInitialLoading,  bool isLoadingMore,  bool hasMoreAnimals)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  LoadPhase initialLoadPhase,  LoadPhase paginationLoadPhase,  bool hasMoreAnimals)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AdoptionState() when $default != null:
-return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.isInitialLoading,_that.isLoadingMore,_that.hasMoreAnimals);case _:
+return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.initialLoadPhase,_that.paginationLoadPhase,_that.hasMoreAnimals);case _:
   return orElse();
 
 }
@@ -178,10 +187,10 @@ return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.fav
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  bool isInitialLoading,  bool isLoadingMore,  bool hasMoreAnimals)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  LoadPhase initialLoadPhase,  LoadPhase paginationLoadPhase,  bool hasMoreAnimals)  $default,) {final _that = this;
 switch (_that) {
 case _AdoptionState():
-return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.isInitialLoading,_that.isLoadingMore,_that.hasMoreAnimals);}
+return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.initialLoadPhase,_that.paginationLoadPhase,_that.hasMoreAnimals);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -195,10 +204,10 @@ return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.fav
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  bool isInitialLoading,  bool isLoadingMore,  bool hasMoreAnimals)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int currentTab,  String searchQuery,  AnimalSearchParams searchFilters,  FavoriteFilter favoriteFilter,  List<Animal> animals,  List<Shelter> shelters,  List<NoticeItem> notifications,  List<HomeCategory> homeCategories,  LoadPhase initialLoadPhase,  LoadPhase paginationLoadPhase,  bool hasMoreAnimals)?  $default,) {final _that = this;
 switch (_that) {
 case _AdoptionState() when $default != null:
-return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.isInitialLoading,_that.isLoadingMore,_that.hasMoreAnimals);case _:
+return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.favoriteFilter,_that.animals,_that.shelters,_that.notifications,_that.homeCategories,_that.initialLoadPhase,_that.paginationLoadPhase,_that.hasMoreAnimals);case _:
   return null;
 
 }
@@ -210,7 +219,7 @@ return $default(_that.currentTab,_that.searchQuery,_that.searchFilters,_that.fav
 
 
 class _AdoptionState extends AdoptionState {
-  const _AdoptionState({required this.currentTab, required this.searchQuery, required this.searchFilters, required this.favoriteFilter, required final  List<Animal> animals, required final  List<Shelter> shelters, required final  List<NoticeItem> notifications, required final  List<HomeCategory> homeCategories, required this.isInitialLoading, required this.isLoadingMore, required this.hasMoreAnimals}): _animals = animals,_shelters = shelters,_notifications = notifications,_homeCategories = homeCategories,super._();
+  const _AdoptionState({required this.currentTab, required this.searchQuery, required this.searchFilters, required this.favoriteFilter, required final  List<Animal> animals, required final  List<Shelter> shelters, required final  List<NoticeItem> notifications, required final  List<HomeCategory> homeCategories, required this.initialLoadPhase, required this.paginationLoadPhase, required this.hasMoreAnimals}): _animals = animals,_shelters = shelters,_notifications = notifications,_homeCategories = homeCategories,super._();
   
 
 @override final  int currentTab;
@@ -245,8 +254,8 @@ class _AdoptionState extends AdoptionState {
   return EqualUnmodifiableListView(_homeCategories);
 }
 
-@override final  bool isInitialLoading;
-@override final  bool isLoadingMore;
+@override final  LoadPhase initialLoadPhase;
+@override final  LoadPhase paginationLoadPhase;
 @override final  bool hasMoreAnimals;
 
 /// Create a copy of AdoptionState
@@ -259,16 +268,16 @@ _$AdoptionStateCopyWith<_AdoptionState> get copyWith => __$AdoptionStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdoptionState&&(identical(other.currentTab, currentTab) || other.currentTab == currentTab)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.searchFilters, searchFilters) || other.searchFilters == searchFilters)&&(identical(other.favoriteFilter, favoriteFilter) || other.favoriteFilter == favoriteFilter)&&const DeepCollectionEquality().equals(other._animals, _animals)&&const DeepCollectionEquality().equals(other._shelters, _shelters)&&const DeepCollectionEquality().equals(other._notifications, _notifications)&&const DeepCollectionEquality().equals(other._homeCategories, _homeCategories)&&(identical(other.isInitialLoading, isInitialLoading) || other.isInitialLoading == isInitialLoading)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.hasMoreAnimals, hasMoreAnimals) || other.hasMoreAnimals == hasMoreAnimals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AdoptionState&&(identical(other.currentTab, currentTab) || other.currentTab == currentTab)&&(identical(other.searchQuery, searchQuery) || other.searchQuery == searchQuery)&&(identical(other.searchFilters, searchFilters) || other.searchFilters == searchFilters)&&(identical(other.favoriteFilter, favoriteFilter) || other.favoriteFilter == favoriteFilter)&&const DeepCollectionEquality().equals(other._animals, _animals)&&const DeepCollectionEquality().equals(other._shelters, _shelters)&&const DeepCollectionEquality().equals(other._notifications, _notifications)&&const DeepCollectionEquality().equals(other._homeCategories, _homeCategories)&&(identical(other.initialLoadPhase, initialLoadPhase) || other.initialLoadPhase == initialLoadPhase)&&(identical(other.paginationLoadPhase, paginationLoadPhase) || other.paginationLoadPhase == paginationLoadPhase)&&(identical(other.hasMoreAnimals, hasMoreAnimals) || other.hasMoreAnimals == hasMoreAnimals));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentTab,searchQuery,searchFilters,favoriteFilter,const DeepCollectionEquality().hash(_animals),const DeepCollectionEquality().hash(_shelters),const DeepCollectionEquality().hash(_notifications),const DeepCollectionEquality().hash(_homeCategories),isInitialLoading,isLoadingMore,hasMoreAnimals);
+int get hashCode => Object.hash(runtimeType,currentTab,searchQuery,searchFilters,favoriteFilter,const DeepCollectionEquality().hash(_animals),const DeepCollectionEquality().hash(_shelters),const DeepCollectionEquality().hash(_notifications),const DeepCollectionEquality().hash(_homeCategories),initialLoadPhase,paginationLoadPhase,hasMoreAnimals);
 
 @override
 String toString() {
-  return 'AdoptionState(currentTab: $currentTab, searchQuery: $searchQuery, searchFilters: $searchFilters, favoriteFilter: $favoriteFilter, animals: $animals, shelters: $shelters, notifications: $notifications, homeCategories: $homeCategories, isInitialLoading: $isInitialLoading, isLoadingMore: $isLoadingMore, hasMoreAnimals: $hasMoreAnimals)';
+  return 'AdoptionState(currentTab: $currentTab, searchQuery: $searchQuery, searchFilters: $searchFilters, favoriteFilter: $favoriteFilter, animals: $animals, shelters: $shelters, notifications: $notifications, homeCategories: $homeCategories, initialLoadPhase: $initialLoadPhase, paginationLoadPhase: $paginationLoadPhase, hasMoreAnimals: $hasMoreAnimals)';
 }
 
 
@@ -279,11 +288,11 @@ abstract mixin class _$AdoptionStateCopyWith<$Res> implements $AdoptionStateCopy
   factory _$AdoptionStateCopyWith(_AdoptionState value, $Res Function(_AdoptionState) _then) = __$AdoptionStateCopyWithImpl;
 @override @useResult
 $Res call({
- int currentTab, String searchQuery, AnimalSearchParams searchFilters, FavoriteFilter favoriteFilter, List<Animal> animals, List<Shelter> shelters, List<NoticeItem> notifications, List<HomeCategory> homeCategories, bool isInitialLoading, bool isLoadingMore, bool hasMoreAnimals
+ int currentTab, String searchQuery, AnimalSearchParams searchFilters, FavoriteFilter favoriteFilter, List<Animal> animals, List<Shelter> shelters, List<NoticeItem> notifications, List<HomeCategory> homeCategories, LoadPhase initialLoadPhase, LoadPhase paginationLoadPhase, bool hasMoreAnimals
 });
 
 
-
+@override $AnimalSearchParamsCopyWith<$Res> get searchFilters;
 
 }
 /// @nodoc
@@ -296,7 +305,7 @@ class __$AdoptionStateCopyWithImpl<$Res>
 
 /// Create a copy of AdoptionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentTab = null,Object? searchQuery = null,Object? searchFilters = null,Object? favoriteFilter = null,Object? animals = null,Object? shelters = null,Object? notifications = null,Object? homeCategories = null,Object? isInitialLoading = null,Object? isLoadingMore = null,Object? hasMoreAnimals = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentTab = null,Object? searchQuery = null,Object? searchFilters = null,Object? favoriteFilter = null,Object? animals = null,Object? shelters = null,Object? notifications = null,Object? homeCategories = null,Object? initialLoadPhase = null,Object? paginationLoadPhase = null,Object? hasMoreAnimals = null,}) {
   return _then(_AdoptionState(
 currentTab: null == currentTab ? _self.currentTab : currentTab // ignore: cast_nullable_to_non_nullable
 as int,searchQuery: null == searchQuery ? _self.searchQuery : searchQuery // ignore: cast_nullable_to_non_nullable
@@ -306,14 +315,23 @@ as FavoriteFilter,animals: null == animals ? _self._animals : animals // ignore:
 as List<Animal>,shelters: null == shelters ? _self._shelters : shelters // ignore: cast_nullable_to_non_nullable
 as List<Shelter>,notifications: null == notifications ? _self._notifications : notifications // ignore: cast_nullable_to_non_nullable
 as List<NoticeItem>,homeCategories: null == homeCategories ? _self._homeCategories : homeCategories // ignore: cast_nullable_to_non_nullable
-as List<HomeCategory>,isInitialLoading: null == isInitialLoading ? _self.isInitialLoading : isInitialLoading // ignore: cast_nullable_to_non_nullable
-as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
-as bool,hasMoreAnimals: null == hasMoreAnimals ? _self.hasMoreAnimals : hasMoreAnimals // ignore: cast_nullable_to_non_nullable
+as List<HomeCategory>,initialLoadPhase: null == initialLoadPhase ? _self.initialLoadPhase : initialLoadPhase // ignore: cast_nullable_to_non_nullable
+as LoadPhase,paginationLoadPhase: null == paginationLoadPhase ? _self.paginationLoadPhase : paginationLoadPhase // ignore: cast_nullable_to_non_nullable
+as LoadPhase,hasMoreAnimals: null == hasMoreAnimals ? _self.hasMoreAnimals : hasMoreAnimals // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
 
-
+/// Create a copy of AdoptionState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AnimalSearchParamsCopyWith<$Res> get searchFilters {
+  
+  return $AnimalSearchParamsCopyWith<$Res>(_self.searchFilters, (value) {
+    return _then(_self.copyWith(searchFilters: value));
+  });
+}
 }
 
 // dart format on

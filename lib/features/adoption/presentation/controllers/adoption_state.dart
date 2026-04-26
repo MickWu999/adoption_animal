@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/lookups/adoption_lookups.dart';
 import '../../domain/models/app_models.dart';
+import 'load_phase.dart';
 
 part 'adoption_state.freezed.dart';
 
@@ -18,8 +19,8 @@ sealed class AdoptionState with _$AdoptionState {
     required List<Shelter> shelters,
     required List<NoticeItem> notifications,
     required List<HomeCategory> homeCategories,
-    required bool isInitialLoading,
-    required bool isLoadingMore,
+    required LoadPhase initialLoadPhase,
+    required LoadPhase paginationLoadPhase,
     required bool hasMoreAnimals,
   }) = _AdoptionState;
 
@@ -36,11 +37,15 @@ sealed class AdoptionState with _$AdoptionState {
       shelters: const [],
       notifications: notifications,
       homeCategories: homeCategories,
-      isInitialLoading: true,
-      isLoadingMore: false,
+      initialLoadPhase: LoadPhase.loading,
+      paginationLoadPhase: LoadPhase.idle,
       hasMoreAnimals: true,
     );
   }
+
+  bool get isInitialLoading => initialLoadPhase == LoadPhase.loading;
+
+  bool get isLoadingMore => paginationLoadPhase == LoadPhase.loading;
 
   List<Animal> get latestAnimals => animals.take(6).toList();
 
@@ -60,7 +65,8 @@ sealed class AdoptionState with _$AdoptionState {
   bool get shouldShowSearchLoading => isInitialLoading;
 
   bool get shouldShowSearchEmptyState =>
-      !isInitialLoading && searchResults.isEmpty;
+      initialLoadPhase == LoadPhase.empty ||
+      (initialLoadPhase == LoadPhase.success && searchResults.isEmpty);
 
   bool get shouldShowSearchFilterBar => hasActiveSearchFilters;
 
@@ -70,6 +76,8 @@ sealed class AdoptionState with _$AdoptionState {
 
   bool get shouldShowSearchLoadMoreTerminator =>
       !isLoadingMore && !hasMoreAnimals;
+
+  bool get hasSearchLoadError => initialLoadPhase == LoadPhase.error;
 
   bool get canLoadNextSearchPage =>
       !isInitialLoading && !isLoadingMore && hasMoreAnimals;

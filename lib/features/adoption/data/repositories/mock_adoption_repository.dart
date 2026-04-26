@@ -1,22 +1,8 @@
-import 'dart:convert';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/models/app_models.dart';
-import '../mappers/animal_api_mapper.dart';
 import '../models/animal_api_query_params.dart';
-
-abstract class AdoptionRepository {
-  // Supabase 接點 4:
-  // 新增 Supabase repository 時，優先維持這個介面不變，
-  // 這樣 presentation layer 不需要跟著調整。
-  List<HomeCategory> getHomeCategories();
-  List<Animal> getAnimals();
-  Future<AnimalPage> fetchAnimals(AnimalApiQueryParams params);
-  List<Shelter> getShelters();
-  List<NoticeItem> getNotifications();
-}
+import 'adoption_repository.dart';
 
 class MockAdoptionRepository implements AdoptionRepository {
   const MockAdoptionRepository();
@@ -96,57 +82,4 @@ class MockAdoptionRepository implements AdoptionRepository {
       ),
     ];
   }
-}
-
-class RemoteAdoptionRepository extends MockAdoptionRepository {
-  RemoteAdoptionRepository({Dio? dio})
-    : _dio =
-          dio ??
-          Dio(
-            BaseOptions(
-              baseUrl: 'https://data.moa.gov.tw/Service/OpenData',
-              connectTimeout: const Duration(seconds: 12),
-              receiveTimeout: const Duration(seconds: 20),
-            ),
-          );
-
-  final Dio _dio;
-
-  @override
-  Future<AnimalPage> fetchAnimals(AnimalApiQueryParams params) async {
-    // Supabase 接點 5:
-    // 目前這裡是 REST API 呼叫；之後可直接改成 Supabase select/range/filter。
-    // 建議保留回傳 AnimalPage，讓 lazy load 與 hasMore 判斷不用重寫。
-    final response = await _dio.get(
-      '/TransService.aspx',
-      queryParameters: {
-        'UnitId': 'QcbUEzN6E6DL',
-        ...params.toQueryParameters(),
-      },
-    );
-
-    final raw = response.data;
-    final payload = raw is String ? jsonDecode(raw) : raw;
-    final items = payload is List
-        ? payload
-        : payload is Map<String, dynamic>
-        ? (payload['Data'] ??
-                  payload['data'] ??
-                  payload['result'] ??
-                  const <dynamic>[])
-              as List<dynamic>
-        : const <dynamic>[];
-
-    final animals = items
-        .whereType<Map<String, dynamic>>()
-        .map(AnimalApiMapper.fromJson)
-        .toList(growable: false);
-
-    // Supabase 接點 6:
-    // 若使用 Supabase，可在查詢結果數量或 count 的基礎上決定 hasMore。
-    return AnimalPage(items: animals, hasMore: animals.length >= params.top);
-  }
-
-  @override
-  List<Shelter> getShelters() => const [];
 }

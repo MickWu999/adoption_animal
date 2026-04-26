@@ -514,7 +514,7 @@ class _AnimalsForShelterProviderElement
 }
 
 String _$adoptionControllerHash() =>
-    r'ddc8914f9f36bfd16eb728a0a648d53a9a5f7fcb';
+    r'c93d9b1a6af77f6aabded889559c58f723170c9a';
 
 /// See also [AdoptionController].
 @ProviderFor(AdoptionController)
