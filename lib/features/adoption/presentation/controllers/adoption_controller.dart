@@ -1,50 +1,50 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/mappers/animal_api_mapper.dart';
-import '../../data/repositories/mock_adoption_repository.dart';
 import '../../data/models/animal_api_query_params.dart';
+import '../../data/repositories/mock_adoption_repository.dart';
 import '../../domain/models/app_models.dart';
 import 'adoption_state.dart';
 
-final adoptionRepositoryProvider = Provider<AdoptionRepository>((ref) {
+part 'adoption_controller.g.dart';
+
+@Riverpod(keepAlive: true)
+AdoptionRepository adoptionRepository(Ref ref) {
   // Supabase 接點 1:
   // 之後可在這裡把 RemoteAdoptionRepository 換成 SupabaseAdoptionRepository，
   // UI 與 controller 會繼續走同一套 fetchAnimals / pagination 流程。
   return RemoteAdoptionRepository();
-});
+}
 
-final adoptionControllerProvider =
-    NotifierProvider<AdoptionController, AdoptionState>(AdoptionController.new);
-
-final animalProvider = Provider.family<Animal?, String>((ref, animalId) {
+@riverpod
+Animal? animal(Ref ref, String animalId) {
   final state = ref.watch(adoptionControllerProvider);
   return state.animalById(animalId);
-});
+}
 
-final shelterProvider = Provider.family<Shelter?, String>((ref, shelterId) {
+@riverpod
+Shelter? shelter(Ref ref, String shelterId) {
   final state = ref.watch(adoptionControllerProvider);
   return state.shelterById(shelterId);
-});
+}
 
-final shelterForAnimalProvider = Provider.family<Shelter?, String>((
-  ref,
-  animalId,
-) {
+@riverpod
+Shelter? shelterForAnimal(Ref ref, String animalId) {
   final state = ref.watch(adoptionControllerProvider);
   return state.shelterForAnimal(animalId);
-});
+}
 
-final animalsForShelterProvider = Provider.family<List<Animal>, String>((
-  ref,
-  shelterId,
-) {
+@riverpod
+List<Animal> animalsForShelter(Ref ref, String shelterId) {
   final state = ref.watch(adoptionControllerProvider);
   return state.animalsForShelter(shelterId);
-});
+}
 
-class AdoptionController extends Notifier<AdoptionState> {
+@Riverpod(keepAlive: true)
+class AdoptionController extends _$AdoptionController {
   static const int _pageSize = 20;
 
   bool _didBootstrapAnimals = false;

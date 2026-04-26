@@ -1,27 +1,41 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../domain/models/app_models.dart';
 
-class AnimalApiQueryParams {
-  const AnimalApiQueryParams({
-    this.top = 1000,
-    this.skip = 0,
-    this.animalId = '',
-    this.animalSubid = '',
-    this.animalAreaPkid = 0,
-    this.animalShelterPkid = 0,
-    this.animalPlace = '',
-    this.animalKind = '',
-    this.animalVariety = '',
-    this.animalSex = '',
-    this.animalBodytype = '',
-    this.animalColour = '',
-    this.animalAge = '',
-    this.animalSterilization = '',
-    this.animalBacterin = '',
-    this.animalFoundplace = '',
-    this.animalStatus = '',
-    this.animalOpendate = '',
-    this.shelterName = '',
-  });
+part 'animal_api_query_params.freezed.dart';
+part 'animal_api_query_params.g.dart';
+
+@freezed
+sealed class AnimalApiQueryParams with _$AnimalApiQueryParams {
+  const AnimalApiQueryParams._();
+
+  @JsonSerializable(includeIfNull: false)
+  const factory AnimalApiQueryParams({
+    @Default(1000) @JsonKey(name: r'$top') int top,
+    @Default(0) @JsonKey(name: r'$skip') int skip,
+    @Default('') @JsonKey(name: 'animal_id') String animalId,
+    @Default('') @JsonKey(name: 'animal_subid') String animalSubid,
+    @Default(0) @JsonKey(name: 'animal_area_pkid') int animalAreaPkid,
+    @Default(0) @JsonKey(name: 'animal_shelter_pkid') int animalShelterPkid,
+    @Default('') @JsonKey(name: 'animal_place') String animalPlace,
+    @Default('') @JsonKey(name: 'animal_kind') String animalKind,
+    @Default('') @JsonKey(name: 'animal_Variety') String animalVariety,
+    @Default('') @JsonKey(name: 'animal_sex') String animalSex,
+    @Default('') @JsonKey(name: 'animal_bodytype') String animalBodytype,
+    @Default('') @JsonKey(name: 'animal_colour') String animalColour,
+    @Default('') @JsonKey(name: 'animal_age') String animalAge,
+    @Default('')
+    @JsonKey(name: 'animal_sterilization')
+    String animalSterilization,
+    @Default('') @JsonKey(name: 'animal_bacterin') String animalBacterin,
+    @Default('') @JsonKey(name: 'animal_foundplace') String animalFoundplace,
+    @Default('') @JsonKey(name: 'animal_status') String animalStatus,
+    @Default('') @JsonKey(name: 'animal_opendate') String animalOpendate,
+    @Default('') @JsonKey(name: 'shelter_name') String shelterName,
+  }) = _AnimalApiQueryParams;
+
+  factory AnimalApiQueryParams.fromJson(Map<String, dynamic> json) =>
+      _$AnimalApiQueryParamsFromJson(json);
 
   factory AnimalApiQueryParams.fromSearchParams(
     AnimalSearchParams searchParams, {
@@ -48,57 +62,21 @@ class AnimalApiQueryParams {
     );
   }
 
-  final int top;
-  final int skip;
-  final String animalId;
-  final String animalSubid;
-  final int animalAreaPkid;
-  final int animalShelterPkid;
-  final String animalPlace;
-  final String animalKind;
-  final String animalVariety;
-  final String animalSex;
-  final String animalBodytype;
-  final String animalColour;
-  final String animalAge;
-  final String animalSterilization;
-  final String animalBacterin;
-  final String animalFoundplace;
-  final String animalStatus;
-  final String animalOpendate;
-  final String shelterName;
-
   Map<String, dynamic> toQueryParameters() {
     // Supabase 接點 8:
     // 這個方法是給目前 REST API 用的。
     // 若切到 Supabase，通常不會再用 queryParameters，而是把這些欄位改成 query.where/eq/ilike/range。
-    final params = <String, dynamic>{r'$top': top, r'$skip': skip};
-
-    void putIfNotEmpty(String key, Object value) {
-      if (value is String && value.isNotEmpty) {
-        params[key] = value;
-      } else if (value is int && value != 0) {
-        params[key] = value;
+    final params = Map<String, dynamic>.from(toJson());
+    params.removeWhere((key, value) {
+      if (value is String) {
+        return value.isEmpty;
       }
-    }
+      if (value is int) {
+        return value == 0 && key != r'$top' && key != r'$skip';
+      }
+      return value == null;
+    });
 
-    putIfNotEmpty('animal_id', animalId);
-    putIfNotEmpty('animal_subid', animalSubid);
-    putIfNotEmpty('animal_area_pkid', animalAreaPkid);
-    putIfNotEmpty('animal_shelter_pkid', animalShelterPkid);
-    putIfNotEmpty('animal_place', animalPlace);
-    putIfNotEmpty('animal_kind', animalKind);
-    putIfNotEmpty('animal_Variety', animalVariety);
-    putIfNotEmpty('animal_sex', animalSex);
-    putIfNotEmpty('animal_bodytype', animalBodytype);
-    putIfNotEmpty('animal_colour', animalColour);
-    putIfNotEmpty('animal_age', animalAge);
-    putIfNotEmpty('animal_sterilization', animalSterilization);
-    putIfNotEmpty('animal_bacterin', animalBacterin);
-    putIfNotEmpty('animal_foundplace', animalFoundplace);
-    putIfNotEmpty('animal_status', animalStatus);
-    putIfNotEmpty('animal_opendate', animalOpendate);
-    putIfNotEmpty('shelter_name', shelterName);
     return params;
   }
 }

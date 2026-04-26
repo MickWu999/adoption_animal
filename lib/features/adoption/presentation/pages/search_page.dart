@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/models/app_models.dart';
 import '../controllers/adoption_controller.dart';
+import '../controllers/search_page_view_data.dart';
 import '../widgets/legacy_ui.dart';
 import '../widgets/search_filter_sheet.dart';
 
@@ -36,6 +37,11 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       return;
     }
 
+    final viewData = ref.read(searchPageViewDataProvider);
+    if (!viewData.canLoadNextPage) {
+      return;
+    }
+
     final position = _scrollController.position;
     if (position.pixels < position.maxScrollExtent - 240) {
       return;
@@ -46,10 +52,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(adoptionControllerProvider);
+    final viewData = ref.watch(searchPageViewDataProvider);
     final controller = ref.read(adoptionControllerProvider.notifier);
-    final results = state.filteredAnimals;
-    final hasActiveFilters = state.activeFilterLabels.isNotEmpty;
+    final results = viewData.results;
 
     return SafeArea(
       child: Padding(
@@ -71,7 +76,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 IconButton(
                   onPressed: () =>
-                      _openFilterSheet(context, state.searchFilters),
+                      _openFilterSheet(context, viewData.searchFilters),
                   icon: const Icon(Icons.tune_rounded),
                 ),
                 IconButton(
@@ -87,7 +92,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ],
             ),
             const SizedBox(height: 16),
-            if (hasActiveFilters)
+            if (viewData.shouldShowFilterBar)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -98,17 +103,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         label: '篩選',
                         selected: true,
                         onTap: () =>
-                            _openFilterSheet(context, state.searchFilters),
+                            _openFilterSheet(context, viewData.searchFilters),
                       ),
                     ),
-                    ...state.activeFilterLabels.map(
+                    ...viewData.activeFilterLabels.map(
                       (label) => Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: FilterChipCard(
                           label: label,
                           selected: true,
                           onTap: () =>
-                              _openFilterSheet(context, state.searchFilters),
+                              _openFilterSheet(context, viewData.searchFilters),
                         ),
                       ),
                     ),
@@ -122,9 +127,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             const SizedBox(height: 18),
             Expanded(
-              child: state.isInitialLoading
+              child: viewData.shouldShowLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : results.isEmpty
+                  : viewData.shouldShowEmptyState
                   ? Center(
                       child: EmptyStatePanel(
                         imagePath:
@@ -139,7 +144,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   : ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.only(bottom: 24),
-                      itemCount: results.length + 2,
+                      itemCount: viewData.listItemCount,
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return Padding(
@@ -147,16 +152,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             child: Row(
                               children: [
                                 Text(
-                                  hasActiveFilters
-                                      ? '已載入 ${results.length} 隻符合條件'
-                                      : '全部毛孩 (${results.length})',
+                                  viewData.resultsHeadline,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                                 const Spacer(),
-                                if (hasActiveFilters)
+                                if (viewData.shouldShowClearAction)
                                   TextButton(
                                     onPressed: controller.resetSearch,
                                     child: const Text('清除'),
@@ -167,14 +170,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         }
 
                         if (index == results.length + 1) {
-                          if (state.isLoadingMore) {
+                          if (viewData.shouldShowLoadMoreIndicator) {
                             return const Padding(
                               padding: EdgeInsets.symmetric(vertical: 12),
                               child: Center(child: CircularProgressIndicator()),
                             );
                           }
 
-                          if (!state.hasMoreAnimals) {
+                          if (viewData.shouldShowLoadMoreTerminator) {
                             return const SizedBox(height: 8);
                           }
 

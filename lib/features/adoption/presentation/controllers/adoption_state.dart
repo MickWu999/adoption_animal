@@ -1,20 +1,27 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 import '../../../../core/lookups/adoption_lookups.dart';
 import '../../domain/models/app_models.dart';
 
-class AdoptionState {
-  const AdoptionState({
-    required this.currentTab,
-    required this.searchQuery,
-    required this.searchFilters,
-    required this.favoriteFilter,
-    required this.animals,
-    required this.shelters,
-    required this.notifications,
-    required this.homeCategories,
-    required this.isInitialLoading,
-    required this.isLoadingMore,
-    required this.hasMoreAnimals,
-  });
+part 'adoption_state.freezed.dart';
+
+@freezed
+sealed class AdoptionState with _$AdoptionState {
+  const AdoptionState._();
+
+  const factory AdoptionState({
+    required int currentTab,
+    required String searchQuery,
+    required AnimalSearchParams searchFilters,
+    required FavoriteFilter favoriteFilter,
+    required List<Animal> animals,
+    required List<Shelter> shelters,
+    required List<NoticeItem> notifications,
+    required List<HomeCategory> homeCategories,
+    required bool isInitialLoading,
+    required bool isLoadingMore,
+    required bool hasMoreAnimals,
+  }) = _AdoptionState;
 
   factory AdoptionState.empty({
     required List<HomeCategory> homeCategories,
@@ -34,18 +41,6 @@ class AdoptionState {
       hasMoreAnimals: true,
     );
   }
-
-  final int currentTab;
-  final String searchQuery;
-  final AnimalSearchParams searchFilters;
-  final FavoriteFilter favoriteFilter;
-  final List<Animal> animals;
-  final List<Shelter> shelters;
-  final List<NoticeItem> notifications;
-  final List<HomeCategory> homeCategories;
-  final bool isInitialLoading;
-  final bool isLoadingMore;
-  final bool hasMoreAnimals;
 
   List<Animal> get latestAnimals => animals.take(6).toList();
 
@@ -180,32 +175,6 @@ class AdoptionState {
           shelter.name == shelterName ||
           _normalizeShelterName(shelter.name) ==
               _normalizeShelterName(shelterName),
-    );
-  }
-
-  AdoptionState copyWith({
-    int? currentTab,
-    String? searchQuery,
-    AnimalSearchParams? searchFilters,
-    FavoriteFilter? favoriteFilter,
-    List<Animal>? animals,
-    List<Shelter>? shelters,
-    bool? isInitialLoading,
-    bool? isLoadingMore,
-    bool? hasMoreAnimals,
-  }) {
-    return AdoptionState(
-      currentTab: currentTab ?? this.currentTab,
-      searchQuery: searchQuery ?? this.searchQuery,
-      searchFilters: searchFilters ?? this.searchFilters,
-      favoriteFilter: favoriteFilter ?? this.favoriteFilter,
-      animals: animals ?? this.animals,
-      shelters: shelters ?? this.shelters,
-      notifications: notifications,
-      homeCategories: homeCategories,
-      isInitialLoading: isInitialLoading ?? this.isInitialLoading,
-      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      hasMoreAnimals: hasMoreAnimals ?? this.hasMoreAnimals,
     );
   }
 }
