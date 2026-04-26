@@ -1,1 +1,1 @@
-export '../domain/models/app_models.dart';
+export '../features/adoption/domain/models/app_models.dart';

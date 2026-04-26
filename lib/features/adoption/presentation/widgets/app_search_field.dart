@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/adoption_theme.dart';
+import '../../../../core/theme/adoption_theme.dart';
 
 class AppSearchField extends StatelessWidget {
   const AppSearchField({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../core/lookups/adoption_lookups.dart';
-import '../../core/theme/adoption_theme.dart';
+import '../../../../core/lookups/adoption_lookups.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../../domain/models/app_models.dart';
 
 class FilterBottomSheet extends StatefulWidget {

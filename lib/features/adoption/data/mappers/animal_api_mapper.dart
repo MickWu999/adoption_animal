@@ -1,4 +1,4 @@
-import '../../core/lookups/adoption_lookups.dart';
+import '../../../../core/lookups/adoption_lookups.dart';
 import '../../domain/models/app_models.dart';
 
 class AnimalApiMapper {

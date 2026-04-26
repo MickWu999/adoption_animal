@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../core/responsive/responsive.dart';
+import '../../../../core/responsive/responsive.dart';
 import '../../domain/models/app_models.dart';
 import 'legacy_ui.dart';
 

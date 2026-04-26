@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/theme/adoption_theme.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
 
@@ -135,6 +135,7 @@ class AnimalDetailPage extends ConsumerWidget {
                             ['體型', animal.size],
                             ['年齡', animal.ageLabel],
                             ['拾獲地點', animal.location],
+                            ['id', animal.id],
                           ],
                         ),
                         const SizedBox(height: 22),
