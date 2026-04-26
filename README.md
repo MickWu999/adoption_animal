@@ -1,3 +1,6 @@
+# data-flow
+Page/UI -> Controller(provider) -> Repository -> API/資料來源 -> Controller 更新 State -> ViewData/State 投影 -> UI 重建
+
 # adoption_animal
 
 以 Flutter 建立的動物認養 App 範例專案，採用 `feature-first` 架構，並以 `flutter_riverpod`、`riverpod_generator`、`freezed`、`json_serializable` 組成可擴充、可維護的大型專案基礎。

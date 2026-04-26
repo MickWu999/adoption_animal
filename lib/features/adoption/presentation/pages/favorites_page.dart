@@ -15,7 +15,6 @@ class FavoritesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(adoptionControllerProvider);
     final controller = ref.read(adoptionControllerProvider.notifier);
-    final animals = state.visibleFavoriteAnimals;
 
     return SafeArea(
       child: Padding(
@@ -42,7 +41,7 @@ class FavoritesPage extends ConsumerWidget {
             SizedBox(height: context.h(14)),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: FavoriteFilter.values
+              children: state.availableFavoriteFilters
                   .map(
                     (filter) => GestureDetector(
                       onTap: () => controller.selectFavoriteFilter(filter),
@@ -56,14 +55,14 @@ class FavoritesPage extends ConsumerWidget {
             ),
             SizedBox(height: context.h(18)),
             Expanded(
-              child: animals.isEmpty
+              child: state.shouldShowFavoritesEmptyState
                   ? Center(
                       child: EmptyStatePanel(
                         imagePath:
                             'assets/images/dog/alvan-nee-T-0EW-SEbsE-unsplash.jpg',
-                        title: '還沒有收藏任何毛孩',
-                        message: '快去尋找喜歡的毛孩，加入收藏吧',
-                        actionLabel: '去尋找毛孩',
+                        title: state.favoritesEmptyStateTitle,
+                        message: state.favoritesEmptyStateMessage,
+                        actionLabel: state.favoritesEmptyStateActionLabel,
                         onPressed: () {
                           controller.selectTab(1);
                           context.go('/search');
@@ -72,11 +71,11 @@ class FavoritesPage extends ConsumerWidget {
                       ),
                     )
                   : ListView.separated(
-                      itemCount: animals.length,
+                      itemCount: state.visibleFavoriteAnimals.length,
                       separatorBuilder: (_, _) =>
                           SizedBox(height: context.h(12)),
                       itemBuilder: (context, index) {
-                        final animal = animals[index];
+                        final animal = state.visibleFavoriteAnimals[index];
                         return GestureDetector(
                           onTap: () => context.push('/animal/${animal.id}'),
                           child: Container(

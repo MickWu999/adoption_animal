@@ -13,8 +13,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(adoptionControllerProvider);
-    final latestAnimals = state.latestAnimals;
-    final favoriteAnimals = state.favoriteAnimals.take(3).toList();
+    final controller = ref.read(adoptionControllerProvider.notifier);
 
     return SafeArea(
       child: CustomScrollView(
@@ -119,17 +118,6 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  // const SizedBox(height: 18),
-                  // RoundedSearchField(
-                  //   hintText: '搜尋品種、地區或收容所',
-                  //   enabled: false,
-                  //   onTap: () {
-                  //     ref
-                  //         .read(adoptionControllerProvider.notifier)
-                  //         .selectTab(1);
-                  //     context.go('/search');
-                  //   },
-                  // ),
                   SizedBox(height: context.h(20)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,75 +130,100 @@ class HomePage extends ConsumerWidget {
                     title: '最新來的毛孩',
                     actionLabel: '查看更多',
                     onTap: () {
-                      ref
-                          .read(adoptionControllerProvider.notifier)
-                          .selectTab(1);
+                      controller.selectTab(1);
                       context.go('/search');
                     },
                   ),
                   SizedBox(height: context.h(6)),
-                  SizedBox(
-                    height: context.h(225),
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: latestAnimals.length,
-                      separatorBuilder: (_, _) =>
-                          SizedBox(width: context.w(14)),
-                      itemBuilder: (context, index) {
-                        final animal = latestAnimals[index];
-                        return AnimalCard(
-                          animal: animal,
-                          width: context.w(170),
-                          onTap: () => context.push('/animal/${animal.id}'),
-                          onFavoriteTap: () => ref
-                              .read(adoptionControllerProvider.notifier)
-                              .toggleFavorite(animal.id),
-                        );
-                      },
+                  if (state.shouldShowHomeLatestAnimals)
+                    SizedBox(
+                      height: context.h(225),
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.latestAnimals.length,
+                        separatorBuilder: (_, _) =>
+                            SizedBox(width: context.w(14)),
+                        itemBuilder: (context, index) {
+                          final animal = state.latestAnimals[index];
+                          return AnimalCard(
+                            animal: animal,
+                            width: context.w(170),
+                            onTap: () => context.push('/animal/${animal.id}'),
+                            onFavoriteTap: () =>
+                                controller.toggleFavorite(animal.id),
+                          );
+                        },
+                      ),
+                    )
+                  else
+                    const EmptyStatePanel(
+                      imagePath:
+                          'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg',
+                      title: '目前沒有最新毛孩',
+                      message: '稍後再回來看看新的認養資訊',
+                      actionLabel: '重新查看',
+                      onPressed: noop,
+                      icon: Icons.pets_outlined,
                     ),
-                  ),
                   SizedBox(height: context.h(24)),
                   SectionHeader(
                     title: '熱門藏養 TOP10',
                     actionLabel: '查看更多',
-                    onTap: () {},
+                    onTap: () {
+                      controller.selectTab(2);
+                      context.go('/favorites');
+                    },
                   ),
                   SizedBox(height: context.h(14)),
-                  ...favoriteAnimals.map(
-                    (animal) => Padding(
-                      padding: EdgeInsets.only(bottom: context.h(12)),
-                      child: ListTile(
-                        tileColor: AdoptionColors.surface,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(context.r(20)),
-                        ),
-                        leading: SizedBox(
-                          width: context.w(40),
-                          height: context.w(40),
-                          child: ClipOval(
-                            child: AnimalImage(
-                              imagePath: animal.imagePath,
-                              width: context.w(40),
-                              height: context.w(40),
+                  if (state.shouldShowHomeTopFavorites)
+                    ...state.topFavoriteAnimals.map(
+                      (animal) => Padding(
+                        padding: EdgeInsets.only(bottom: context.h(12)),
+                        child: ListTile(
+                          tileColor: AdoptionColors.surface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(context.r(20)),
+                          ),
+                          leading: SizedBox(
+                            width: context.w(40),
+                            height: context.w(40),
+                            child: ClipOval(
+                              child: AnimalImage(
+                                imagePath: animal.imagePath,
+                                width: context.w(40),
+                                height: context.w(40),
+                              ),
                             ),
                           ),
-                        ),
-                        title: Text(
-                          animal.name,
-                          style: TextStyle(
-                            fontSize: context.sp(15),
-                            fontWeight: FontWeight.w700,
+                          title: Text(
+                            animal.name,
+                            style: TextStyle(
+                              fontSize: context.sp(15),
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
+                          subtitle: Text(
+                            '${animal.location}・${animal.genderLabel}',
+                            style: TextStyle(fontSize: context.sp(13)),
+                          ),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => context.push('/animal/${animal.id}'),
                         ),
-                        subtitle: Text(
-                          '${animal.location}・${animal.genderLabel}',
-                          style: TextStyle(fontSize: context.sp(13)),
-                        ),
-                        trailing: const Icon(Icons.chevron_right_rounded),
-                        onTap: () => context.push('/animal/${animal.id}'),
                       ),
+                    )
+                  else
+                    EmptyStatePanel(
+                      imagePath:
+                          'assets/images/dog/alvan-nee-T-0EW-SEbsE-unsplash.jpg',
+                      title: '還沒有熱門收藏',
+                      message: '把喜歡的毛孩加入收藏，這裡就會顯示推薦名單',
+                      actionLabel: '去尋找毛孩',
+                      onPressed: () {
+                        controller.selectTab(1);
+                        context.go('/search');
+                      },
+                      icon: Icons.favorite_border_rounded,
                     ),
-                  ),
                 ],
               ),
             ),

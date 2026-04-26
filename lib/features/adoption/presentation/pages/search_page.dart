@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/models/app_models.dart';
 import '../controllers/adoption_controller.dart';
-import '../controllers/search_page_view_data.dart';
 import '../widgets/legacy_ui.dart';
 import '../widgets/search_filter_sheet.dart';
 
@@ -37,8 +36,8 @@ class _SearchPageState extends ConsumerState<SearchPage> {
       return;
     }
 
-    final viewData = ref.read(searchPageViewDataProvider);
-    if (!viewData.canLoadNextPage) {
+    final state = ref.read(adoptionControllerProvider);
+    if (!state.canLoadNextSearchPage) {
       return;
     }
 
@@ -52,9 +51,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final viewData = ref.watch(searchPageViewDataProvider);
+    final state = ref.watch(adoptionControllerProvider);
     final controller = ref.read(adoptionControllerProvider.notifier);
-    final results = viewData.results;
+    final results = state.searchResults;
 
     return SafeArea(
       child: Padding(
@@ -76,7 +75,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 IconButton(
                   onPressed: () =>
-                      _openFilterSheet(context, viewData.searchFilters),
+                      _openFilterSheet(context, state.searchFilters),
                   icon: const Icon(Icons.tune_rounded),
                 ),
                 IconButton(
@@ -92,7 +91,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ],
             ),
             const SizedBox(height: 16),
-            if (viewData.shouldShowFilterBar)
+            if (state.shouldShowSearchFilterBar)
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -103,17 +102,17 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         label: '篩選',
                         selected: true,
                         onTap: () =>
-                            _openFilterSheet(context, viewData.searchFilters),
+                            _openFilterSheet(context, state.searchFilters),
                       ),
                     ),
-                    ...viewData.activeFilterLabels.map(
+                    ...state.activeFilterLabels.map(
                       (label) => Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: FilterChipCard(
                           label: label,
                           selected: true,
                           onTap: () =>
-                              _openFilterSheet(context, viewData.searchFilters),
+                              _openFilterSheet(context, state.searchFilters),
                         ),
                       ),
                     ),
@@ -127,9 +126,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
               ),
             const SizedBox(height: 18),
             Expanded(
-              child: viewData.shouldShowLoading
+              child: state.shouldShowSearchLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : viewData.shouldShowEmptyState
+                  : state.shouldShowSearchEmptyState
                   ? Center(
                       child: EmptyStatePanel(
                         imagePath:
@@ -144,7 +143,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   : ListView.builder(
                       controller: _scrollController,
                       padding: const EdgeInsets.only(bottom: 24),
-                      itemCount: viewData.listItemCount,
+                      itemCount: state.searchListItemCount,
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return Padding(
@@ -152,14 +151,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             child: Row(
                               children: [
                                 Text(
-                                  viewData.resultsHeadline,
+                                  state.searchResultsHeadline,
                                   style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                                 const Spacer(),
-                                if (viewData.shouldShowClearAction)
+                                if (state.shouldShowSearchClearAction)
                                   TextButton(
                                     onPressed: controller.resetSearch,
                                     child: const Text('清除'),
@@ -170,14 +169,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                         }
 
                         if (index == results.length + 1) {
-                          if (viewData.shouldShowLoadMoreIndicator) {
+                          if (state.shouldShowSearchLoadMoreIndicator) {
                             return const Padding(
                               padding: EdgeInsets.symmetric(vertical: 12),
                               child: Center(child: CircularProgressIndicator()),
                             );
                           }
 
-                          if (viewData.shouldShowLoadMoreTerminator) {
+                          if (state.shouldShowSearchLoadMoreTerminator) {
                             return const SizedBox(height: 8);
                           }
 

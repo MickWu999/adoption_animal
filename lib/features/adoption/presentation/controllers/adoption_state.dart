@@ -47,6 +47,39 @@ sealed class AdoptionState with _$AdoptionState {
   List<Animal> get favoriteAnimals =>
       animals.where((animal) => animal.isFavorite).toList();
 
+  List<Animal> get topFavoriteAnimals => favoriteAnimals.take(3).toList();
+
+  bool get shouldShowHomeLatestAnimals => latestAnimals.isNotEmpty;
+
+  bool get shouldShowHomeTopFavorites => topFavoriteAnimals.isNotEmpty;
+
+  List<Animal> get searchResults => filteredAnimals;
+
+  bool get hasActiveSearchFilters => activeFilterLabels.isNotEmpty;
+
+  bool get shouldShowSearchLoading => isInitialLoading;
+
+  bool get shouldShowSearchEmptyState =>
+      !isInitialLoading && searchResults.isEmpty;
+
+  bool get shouldShowSearchFilterBar => hasActiveSearchFilters;
+
+  bool get shouldShowSearchClearAction => hasActiveSearchFilters;
+
+  bool get shouldShowSearchLoadMoreIndicator => isLoadingMore;
+
+  bool get shouldShowSearchLoadMoreTerminator =>
+      !isLoadingMore && !hasMoreAnimals;
+
+  bool get canLoadNextSearchPage =>
+      !isInitialLoading && !isLoadingMore && hasMoreAnimals;
+
+  int get searchListItemCount => searchResults.length + 2;
+
+  String get searchResultsHeadline => hasActiveSearchFilters
+      ? '已載入 ${searchResults.length} 隻符合條件'
+      : '全部毛孩 (${searchResults.length})';
+
   List<Animal> get filteredAnimals {
     final query = searchQuery.trim().toLowerCase();
 
@@ -99,6 +132,18 @@ sealed class AdoptionState with _$AdoptionState {
         return favorites.where((animal) => animal.isAdopted).toList();
     }
   }
+
+  List<FavoriteFilter> get availableFavoriteFilters => FavoriteFilter.values;
+
+  bool get shouldShowFavoritesEmptyState => visibleFavoriteAnimals.isEmpty;
+
+  bool get shouldShowFavoritesList => visibleFavoriteAnimals.isNotEmpty;
+
+  String get favoritesEmptyStateTitle => '還沒有收藏任何毛孩';
+
+  String get favoritesEmptyStateMessage => '快去尋找喜歡的毛孩，加入收藏吧';
+
+  String get favoritesEmptyStateActionLabel => '去尋找毛孩';
 
   List<String> get activeFilterLabels {
     return [
