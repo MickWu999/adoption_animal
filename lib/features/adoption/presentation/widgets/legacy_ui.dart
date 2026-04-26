@@ -9,8 +9,8 @@ void noop() {}
 class AdoptionImageStyle {
   const AdoptionImageStyle._();
 
-  static const placeholder = Color(0xFFF1ECE5);
-  static const highlight = Color(0xFFF9F6F2);
+  static const placeholder = Color(0xFFE2D6C8);
+  static const highlight = Color(0xFFF7EFE6);
   static const fallback = Color(0xFFF4F0EA);
   static const fallbackIcon = Color(0xFF9F9488);
 }

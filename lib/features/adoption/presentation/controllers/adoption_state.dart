@@ -83,10 +83,10 @@ sealed class AdoptionState with _$AdoptionState {
       !isInitialLoading && !isLoadingMore && hasMoreAnimals;
 
   int get searchListItemCount => searchResults.length + 2;
-
-  String get searchResultsHeadline => hasActiveSearchFilters
-      ? '已載入 ${searchResults.length} 隻符合條件'
-      : '全部毛孩 (${searchResults.length})';
+  //lazyload 目前不需要
+  // String get searchResultsHeadline => hasActiveSearchFilters
+  //     ? '已載入 ${searchResults.length} 隻符合條件'
+  //     : '全部毛孩 (${searchResults.length})';
 
   List<Animal> get filteredAnimals {
     final query = searchQuery.trim().toLowerCase();

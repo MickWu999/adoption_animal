@@ -54,7 +54,7 @@ class SearchResultsList extends StatelessWidget {
     super.key,
     required this.scrollController,
     required this.results,
-    required this.resultsHeadline,
+    // required this.resultsHeadline,
     required this.shouldShowClearAction,
     required this.shouldShowLoadMoreIndicator,
     required this.shouldShowLoadMoreTerminator,
@@ -64,7 +64,7 @@ class SearchResultsList extends StatelessWidget {
 
   final ScrollController scrollController;
   final List<Animal> results;
-  final String resultsHeadline;
+  //  final String resultsHeadline;
   final bool shouldShowClearAction;
   final bool shouldShowLoadMoreIndicator;
   final bool shouldShowLoadMoreTerminator;
@@ -83,13 +83,13 @@ class SearchResultsList extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: Row(
               children: [
-                Text(
-                  resultsHeadline,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+                // Text(
+                //   resultsHeadline,
+                //   style: const TextStyle(
+                //     fontSize: 18,
+                //     fontWeight: FontWeight.w800,
+                //   ),
+                // ),
                 const Spacer(),
                 if (shouldShowClearAction)
                   TextButton(onPressed: onReset, child: const Text('清除')),

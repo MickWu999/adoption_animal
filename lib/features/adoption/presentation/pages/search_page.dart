@@ -117,7 +117,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   : SearchResultsList(
                       scrollController: _scrollController,
                       results: results,
-                      resultsHeadline: state.searchResultsHeadline,
+                      // resultsHeadline: state.searchResultsHeadline,
                       shouldShowClearAction: state.shouldShowSearchClearAction,
                       shouldShowLoadMoreIndicator:
                           state.shouldShowSearchLoadMoreIndicator,
