@@ -151,9 +151,9 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
   Future<void> _openFilterSheet(
     BuildContext context,
-    SearchFilters initialFilters,
+    AnimalSearchParams initialFilters,
   ) async {
-    final result = await showModalBottomSheet<SearchFilters>(
+    final result = await showModalBottomSheet<AnimalSearchParams>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

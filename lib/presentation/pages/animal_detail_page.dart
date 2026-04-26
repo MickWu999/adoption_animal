@@ -12,11 +12,15 @@ class AnimalDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint('[AnimalDetailPage] route animalId=$animalId');
     final animal = ref.watch(animalProvider(animalId));
     final shelter = ref.watch(shelterForAnimalProvider(animalId));
     final controller = ref.read(adoptionControllerProvider.notifier);
 
     if (animal == null || shelter == null) {
+      debugPrint(
+        '[AnimalDetailPage] missing data animal=${animal?.id} shelter=${shelter?.id}',
+      );
       return Scaffold(
         body: Center(
           child: EmptyStatePanel(
@@ -58,7 +62,7 @@ class AnimalDetailPage extends ConsumerWidget {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.asset(animal.imagePath, fit: BoxFit.cover),
+                      AnimalImage(imagePath: animal.imagePath),
                       DecoratedBox(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(

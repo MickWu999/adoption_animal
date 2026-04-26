@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/repositories/mock_adoption_repository.dart';
@@ -5,7 +7,7 @@ import '../../domain/models/app_models.dart';
 import 'adoption_state.dart';
 
 final adoptionRepositoryProvider = Provider<AdoptionRepository>((ref) {
-  return const MockAdoptionRepository();
+  return RemoteAdoptionRepository();
 });
 
 final adoptionControllerProvider =
@@ -38,10 +40,20 @@ final animalsForShelterProvider = Provider.family<List<Animal>, String>((
 });
 
 class AdoptionController extends Notifier<AdoptionState> {
+  bool _didBootstrapAnimals = false;
+  int _fetchToken = 0;
+
   @override
   AdoptionState build() {
     final repository = ref.read(adoptionRepositoryProvider);
-    return AdoptionState.initial(repository);
+    if (!_didBootstrapAnimals) {
+      _didBootstrapAnimals = true;
+      unawaited(_refreshAnimals(repository, AnimalSearchParams.defaults()));
+    }
+    return AdoptionState.empty(
+      homeCategories: repository.getHomeCategories(),
+      notifications: repository.getNotifications(),
+    );
   }
 
   void syncCurrentTab(int index) {
@@ -59,14 +71,21 @@ class AdoptionController extends Notifier<AdoptionState> {
     state = state.copyWith(searchQuery: value);
   }
 
-  void updateSearchFilters(SearchFilters filters) {
+  void updateSearchFilters(AnimalSearchParams filters) {
     state = state.copyWith(searchFilters: filters);
+    unawaited(_refreshAnimals(ref.read(adoptionRepositoryProvider), filters));
   }
 
   void resetSearch() {
     state = state.copyWith(
       searchQuery: '',
-      searchFilters: SearchFilters.defaults(),
+      searchFilters: AnimalSearchParams.defaults(),
+    );
+    unawaited(
+      _refreshAnimals(
+        ref.read(adoptionRepositoryProvider),
+        AnimalSearchParams.defaults(),
+      ),
     );
   }
 
@@ -84,5 +103,52 @@ class AdoptionController extends Notifier<AdoptionState> {
     ];
 
     state = state.copyWith(animals: animals);
+  }
+
+  Future<void> _refreshAnimals(
+    AdoptionRepository repository,
+    AnimalSearchParams searchFilters,
+  ) async {
+    final requestToken = ++_fetchToken;
+    final params = AnimalApiQueryParams.fromSearchParams(searchFilters);
+
+    try {
+      final animals = await repository.fetchAnimals(params);
+      if (requestToken != _fetchToken) {
+        return;
+      }
+      state = state.copyWith(
+        animals: animals,
+        shelters: _buildSheltersFromAnimals(animals),
+      );
+    } catch (_) {
+      if (requestToken != _fetchToken) {
+        return;
+      }
+    }
+  }
+
+  List<Shelter> _buildSheltersFromAnimals(List<Animal> animals) {
+    final sheltersById = <String, Shelter>{};
+    for (final animal in animals) {
+      final key = animal.animalShelterPkid != 0
+          ? animal.animalShelterPkid.toString()
+          : animal.shelterId;
+      if (sheltersById.containsKey(key)) {
+        continue;
+      }
+      sheltersById[key] = Shelter(
+        id: key,
+        shelterPkid: animal.animalShelterPkid,
+        name: animal.shelterName,
+        imagePath: animal.imagePath,
+        address: animal.shelterAddress,
+        phone: animal.shelterTel,
+        distance: '',
+        capacity: '',
+        openingHours: '',
+      );
+    }
+    return sheltersById.values.toList(growable: false);
   }
 }

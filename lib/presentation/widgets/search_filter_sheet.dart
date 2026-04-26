@@ -1,210 +1,444 @@
 import 'package:flutter/material.dart';
 
-import '../../data/mock_data.dart';
 import '../../domain/models/app_models.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({super.key, required this.initialFilters});
 
-  final SearchFilters initialFilters;
+  final AnimalSearchParams initialFilters;
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
-  late SearchFilters _filters = widget.initialFilters;
+  late AnimalSearchParams _filters = widget.initialFilters;
+  bool _showAdvanced = false;
 
-  String get _selectedType =>
-      _filters.types.isEmpty ? '不限' : _filters.types.first;
-  String get _selectedArea =>
-      _filters.areas.isEmpty ? '不限' : _filters.areas.first;
-  String get _selectedAge => _filters.ages.isEmpty ? '不限' : _filters.ages.first;
-  String get _selectedGender =>
-      _filters.genders.where((item) => item != '不限').isEmpty
+  int get _animalAreaPkid => _filters.animalAreaPkid;
+  int get _animalShelterPkid => _filters.animalShelterPkid;
+  String get _animalKind =>
+      _filters.animalKind.isEmpty ? '不限' : _filters.animalKind;
+  String get _animalAge =>
+      _filters.animalAge.isEmpty ? '不限' : _filters.animalAge;
+  String get _animalStatus =>
+      _filters.animalStatus.isEmpty ? '不限' : _filters.animalStatus;
+  String get _animalSex =>
+      _filters.animalSex.isEmpty ? '不限' : _filters.animalSex;
+  String get _animalBodytype =>
+      _filters.animalBodytype.isEmpty ? '不限' : _filters.animalBodytype;
+  String get _animalSterilization => _filters.animalSterilization.isEmpty
       ? '不限'
-      : _filters.genders.where((item) => item != '不限').first;
-  String get _selectedSize =>
-      _filters.sizes.where((item) => item != '不限').isEmpty
-      ? '不限'
-      : _filters.sizes.where((item) => item != '不限').first;
-  String get _selectedNeuter =>
-      _filters.neuter.where((item) => item != '不限').isEmpty
-      ? '不限'
-      : _filters.neuter.where((item) => item != '不限').first;
+      : _filters.animalSterilization;
+  String get _animalBacterin =>
+      _filters.animalBacterin.isEmpty ? '不限' : _filters.animalBacterin;
 
-  void _apply(SearchFilters next) {
+  int get _activeCount {
+    var count = 0;
+    if (_filters.animalAreaPkid != 0) count += 1;
+    if (_filters.animalShelterPkid != 0) count += 1;
+    if (_filters.animalKind.isNotEmpty) count += 1;
+    if (_filters.animalVariety.isNotEmpty) count += 1;
+    if (_filters.animalSex.isNotEmpty) count += 1;
+    if (_filters.animalBodytype.isNotEmpty) count += 1;
+    if (_filters.animalColour.isNotEmpty) count += 1;
+    if (_filters.animalAge.isNotEmpty) count += 1;
+    if (_filters.animalSterilization.isNotEmpty) count += 1;
+    if (_filters.animalBacterin.isNotEmpty) count += 1;
+    if (_filters.animalStatus.isNotEmpty) count += 1;
+    return count;
+  }
+
+  void _apply(AnimalSearchParams next) {
     setState(() {
       _filters = next;
     });
   }
 
+  void _reset() {
+    setState(() {
+      _filters = AnimalSearchParams.defaults();
+      _showAdvanced = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF7F4EE),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 48,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFD4CEC4),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              children: [
-                const Text(
-                  '篩選毛孩',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () => _apply(SearchFilters.defaults()),
-                  child: const Text('重設'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              '沒有設定條件時會顯示全部毛孩。',
-              style: TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 22),
-            const Text('動物類型', style: TextStyle(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 10),
-            _SegmentedFilter(
-              options: const ['不限', '狗狗', '貓咪', '其他'],
-              value: _selectedType,
-              onChanged: (value) => _apply(_filters.selectType(value)),
-            ),
-            const SizedBox(height: 18),
-            _FilterMenuTile(
-              label: '地區',
-              value: _selectedArea,
-              options: const ['不限', ...taiwanAreas],
-              onChanged: (value) => _apply(_filters.selectArea(value)),
-            ),
-            const SizedBox(height: 10),
-            _FilterMenuTile(
-              label: '年齡',
-              value: _selectedAge,
-              options: const ['不限', ...ageFilters],
-              onChanged: (value) => _apply(_filters.selectAge(value)),
-            ),
-            const SizedBox(height: 10),
-            _FilterMenuTile(
-              label: '性別',
-              value: _selectedGender,
-              options: genderFilters,
-              onChanged: (value) => _apply(_filters.selectGender(value)),
-            ),
-            const SizedBox(height: 10),
-            _FilterMenuTile(
-              label: '體型',
-              value: _selectedSize,
-              options: sizeFilters,
-              onChanged: (value) => _apply(_filters.selectSize(value)),
-            ),
-            const SizedBox(height: 10),
-            _FilterMenuTile(
-              label: '是否絕育',
-              value: _selectedNeuter,
-              options: neuterFilters,
-              onChanged: (value) => _apply(_filters.selectNeuter(value)),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                onPressed: () => Navigator.of(context).pop(_filters),
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF4F8A3F),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+    final sheetHeight = MediaQuery.sizeOf(context).height * 0.88;
+
+    return SizedBox(
+      height: sheetHeight,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Color(0xFFF7F4EE),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4CEC4),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                 ),
-                child: const Text('套用篩選'),
               ),
-            ),
-          ],
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  const Text(
+                    '篩選毛孩',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(width: 10),
+                  _SelectionBadge(count: _activeCount),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: _reset,
+                    icon: const Icon(Icons.refresh_rounded, size: 18),
+                    label: const Text('重設'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF4F8A3F),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Text(
+                '基礎查詢先縮小範圍，進階查詢可更精準對應 API 欄位。',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 18),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const _SectionLabel(
+                        title: '基礎查詢',
+                        subtitle: '先從最常用的條件開始',
+                      ),
+                      const SizedBox(height: 10),
+                      _DropdownFilterTile<int>(
+                        label: '縣市',
+                        value: _animalAreaPkid,
+                        options: [
+                          const _ChoiceOption<int>('不限', 0),
+                          ...countyOptions
+                              .map(
+                                (option) =>
+                                    _ChoiceOption<int>(option.label, option.code),
+                              ),
+                        ],
+                        onChanged: (value) => _apply(
+                          _filters.copyWith(
+                            animalAreaPkid: value,
+                            animalShelterPkid: 0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _DropdownFilterTile<int>(
+                        label: '收容所',
+                        value: _animalShelterPkid,
+                        options: [
+                          const _ChoiceOption<int>('不限', 0),
+                          ...shelterOptions
+                              .where(
+                                (option) =>
+                                    _filters.animalAreaPkid == 0 ||
+                                    option.countyCode == _filters.animalAreaPkid,
+                              )
+                              .map(
+                                (option) =>
+                                    _ChoiceOption<int>(option.label, option.code),
+                              ),
+                        ],
+                        onChanged: (value) => _apply(
+                          _filters.copyWith(animalShelterPkid: value),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _DropdownFilterTile<String>(
+                        label: '動物類型',
+                        value: _animalKind,
+                        options: const <_ChoiceOption<String>>[
+                          _ChoiceOption<String>('不限', '不限'),
+                          _ChoiceOption<String>('狗', '狗'),
+                          _ChoiceOption<String>('貓', '貓'),
+                          _ChoiceOption<String>('其他', '其他'),
+                        ],
+                        onChanged: (value) => _apply(
+                          _filters.copyWith(
+                            animalKind: value == '不限' ? '' : value,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _DropdownFilterTile<String>(
+                        label: '年齡',
+                        value: _animalAge,
+                        options: const <_ChoiceOption<String>>[
+                          _ChoiceOption<String>('不限', '不限'),
+                          _ChoiceOption<String>('幼年', 'CHILD'),
+                          _ChoiceOption<String>('成年', 'ADULT'),
+                        ],
+                        onChanged: (value) => _apply(
+                          _filters.copyWith(
+                            animalAge: value == '不限' ? '' : value,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      _DropdownFilterTile<String>(
+                        label: '狀態',
+                        value: _animalStatus,
+                        options: const <_ChoiceOption<String>>[
+                          _ChoiceOption<String>('不限', '不限'),
+                          _ChoiceOption<String>('開放認養', 'OPEN'),
+                          _ChoiceOption<String>('已送養', 'ADOPTED'),
+                          _ChoiceOption<String>('其他', 'OTHER'),
+                          _ChoiceOption<String>('死亡', 'DEAD'),
+                        ],
+                        onChanged: (value) => _apply(
+                          _filters.copyWith(
+                            animalStatus: value == '不限' ? '' : value,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        children: [
+                          const _SectionLabel(
+                            title: '進階查詢',
+                            subtitle: '需要更細的條件時再展開',
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _showAdvanced = !_showAdvanced;
+                              });
+                            },
+                            child: Text(_showAdvanced ? '收合' : '展開'),
+                          ),
+                        ],
+                      ),
+                      AnimatedCrossFade(
+                        firstChild: const SizedBox.shrink(),
+                        secondChild: Column(
+                          children: [
+                            _TextFilterField(
+                              label: '品種',
+                              hintText: '例如 米克斯 / 柯基',
+                              initialValue: _filters.animalVariety,
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(animalVariety: value.trim()),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _DropdownFilterTile<String>(
+                              label: '性別',
+                              value: _animalSex,
+                              options: const <_ChoiceOption<String>>[
+                                _ChoiceOption<String>('不限', '不限'),
+                                _ChoiceOption<String>('公', 'M'),
+                                _ChoiceOption<String>('母', 'F'),
+                                _ChoiceOption<String>('不詳', 'N'),
+                              ],
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(
+                                  animalSex: value == '不限' ? '' : value,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _DropdownFilterTile<String>(
+                              label: '體型',
+                              value: _animalBodytype,
+                              options: const <_ChoiceOption<String>>[
+                                _ChoiceOption<String>('不限', '不限'),
+                                _ChoiceOption<String>('小型', 'SMALL'),
+                                _ChoiceOption<String>('中型', 'MEDIUM'),
+                                _ChoiceOption<String>('大型', 'BIG'),
+                              ],
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(
+                                  animalBodytype: value == '不限' ? '' : value,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _TextFilterField(
+                              label: '毛色',
+                              hintText: '例如 黑色 / 黃白色',
+                              initialValue: _filters.animalColour,
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(animalColour: value.trim()),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _DropdownFilterTile<String>(
+                              label: '是否絕育',
+                              value: _animalSterilization,
+                              options: const <_ChoiceOption<String>>[
+                                _ChoiceOption<String>('不限', '不限'),
+                                _ChoiceOption<String>('是', 'T'),
+                                _ChoiceOption<String>('否', 'F'),
+                                _ChoiceOption<String>('未知', 'N'),
+                              ],
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(
+                                  animalSterilization: value == '不限'
+                                      ? ''
+                                      : value,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _DropdownFilterTile<String>(
+                              label: '疫苗',
+                              value: _animalBacterin,
+                              options: const <_ChoiceOption<String>>[
+                                _ChoiceOption<String>('不限', '不限'),
+                                _ChoiceOption<String>('是', 'T'),
+                                _ChoiceOption<String>('否', 'F'),
+                                _ChoiceOption<String>('未知', 'N'),
+                              ],
+                              onChanged: (value) => _apply(
+                                _filters.copyWith(
+                                  animalBacterin: value == '不限' ? '' : value,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        crossFadeState: _showAdvanced
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        duration: const Duration(milliseconds: 220),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              _ActionBar(onApply: () => Navigator.of(context).pop(_filters)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _SegmentedFilter extends StatelessWidget {
-  const _SegmentedFilter({
-    required this.options,
-    required this.value,
-    required this.onChanged,
-  });
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.title, required this.subtitle});
 
-  final List<String> options;
-  final String value;
-  final ValueChanged<String> onChanged;
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            color: Colors.black54,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectionBadge extends StatelessWidget {
+  const _SelectionBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasSelection = count > 0;
+
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE1DACE)),
+        color: hasSelection ? const Color(0xFFEAF4E7) : const Color(0xFFF4F0EA),
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Row(
-        children: options.map((option) {
-          final selected = option == value;
-          return Expanded(
-            child: InkWell(
-              onTap: () => onChanged(option),
-              borderRadius: BorderRadius.circular(14),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(vertical: 11),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? const Color(0xFF4F8A3F)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Text(
-                  option,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: selected ? Colors.white : const Color(0xFF4B4B4B),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+      child: Text(
+        hasSelection ? '已選 $count 項' : '尚未選條件',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: hasSelection
+              ? const Color(0xFF3F6F32)
+              : const Color(0xFF6A6258),
+        ),
       ),
     );
   }
 }
 
-class _FilterMenuTile extends StatelessWidget {
-  const _FilterMenuTile({
+class _ActionBar extends StatelessWidget {
+  const _ActionBar({required this.onApply});
+
+  final VoidCallback onApply;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: onApply,
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFF4F8A3F),
+          minimumSize: const Size.fromHeight(52),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: const Text('套用篩選'),
+      ),
+    );
+  }
+}
+
+class _ChoiceOption<T> {
+  const _ChoiceOption(this.label, this.value);
+
+  final String label;
+  final T value;
+}
+
+class _DropdownFilterTile<T> extends StatelessWidget {
+  const _DropdownFilterTile({
     required this.label,
     required this.value,
     required this.options,
@@ -212,9 +446,9 @@ class _FilterMenuTile extends StatelessWidget {
   });
 
   final String label;
-  final String value;
-  final List<String> options;
-  final ValueChanged<String> onChanged;
+  final T value;
+  final List<_ChoiceOption<T>> options;
+  final ValueChanged<T> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -236,9 +470,9 @@ class _FilterMenuTile extends StatelessWidget {
           ),
           const Spacer(),
           SizedBox(
-            width: 128,
+            width: 152,
             child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
+              child: DropdownButton<T>(
                 value: value,
                 isExpanded: true,
                 alignment: Alignment.centerRight,
@@ -246,9 +480,9 @@ class _FilterMenuTile extends StatelessWidget {
                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 items: options
                     .map(
-                      (option) => DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(option),
+                      (option) => DropdownMenuItem<T>(
+                        value: option.value,
+                        child: Text(option.label),
                       ),
                     )
                     .toList(),
@@ -261,6 +495,73 @@ class _FilterMenuTile extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TextFilterField extends StatefulWidget {
+  const _TextFilterField({
+    required this.label,
+    required this.hintText,
+    required this.initialValue,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String hintText;
+  final String initialValue;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_TextFilterField> createState() => _TextFilterFieldState();
+}
+
+class _TextFilterFieldState extends State<_TextFilterField> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initialValue,
+  );
+
+  @override
+  void didUpdateWidget(covariant _TextFilterField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialValue != widget.initialValue &&
+        _controller.text != widget.initialValue) {
+      _controller.text = widget.initialValue;
+      _controller.selection = TextSelection.collapsed(
+        offset: widget.initialValue.length,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      onChanged: widget.onChanged,
+      decoration: InputDecoration(
+        labelText: widget.label,
+        hintText: widget.hintText,
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFE1DACE)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFFE1DACE)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: Color(0xFF4F8A3F), width: 1.2),
+        ),
       ),
     );
   }

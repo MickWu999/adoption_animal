@@ -50,6 +50,51 @@ class RoundedSearchField extends StatelessWidget {
   }
 }
 
+class AnimalImage extends StatelessWidget {
+  const AnimalImage({
+    super.key,
+    required this.imagePath,
+    this.width,
+    this.height,
+  });
+
+  final String imagePath;
+  final double? width;
+  final double? height;
+
+  @override
+  Widget build(BuildContext context) {
+    final image = imagePath.startsWith('http')
+        ? Image.network(
+            imagePath,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _fallbackImage();
+            },
+          )
+        : Image.asset(
+            imagePath,
+            width: width,
+            height: height,
+            fit: BoxFit.cover,
+          );
+
+    return image;
+  }
+
+  Widget _fallbackImage() {
+    return Container(
+      width: width,
+      height: height,
+      color: const Color(0xFFF4F0EA),
+      alignment: Alignment.center,
+      child: const Icon(Icons.pets_rounded, color: Color(0xFF9F9488)),
+    );
+  }
+}
+
 class EmptyStatePanel extends StatelessWidget {
   const EmptyStatePanel({
     super.key,
@@ -78,12 +123,7 @@ class EmptyStatePanel extends StatelessWidget {
           Stack(
             alignment: Alignment.topRight,
             children: [
-              Image.asset(
-                imagePath,
-                width: 136,
-                height: 136,
-                fit: BoxFit.cover,
-              ),
+              AnimalImage(imagePath: imagePath, width: 136, height: 136),
               CircleAvatar(
                 radius: 18,
                 backgroundColor: Colors.white,
@@ -159,12 +199,7 @@ class AnimalCard extends StatelessWidget {
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(18),
                       ),
-                      child: Image.asset(
-                        animal.imagePath,
-                        width: double.infinity,
-                        height: double.infinity,
-                        fit: BoxFit.cover,
-                      ),
+                      child: AnimalImage(imagePath: animal.imagePath),
                     ),
                     Positioned(
                       top: 8,
@@ -391,11 +426,10 @@ class CategoryCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(18),
-            child: Image.asset(
-              animal.imagePath,
+            child: AnimalImage(
+              imagePath: animal.imagePath,
               height: 110,
               width: double.infinity,
-              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(height: 10),
@@ -657,12 +691,7 @@ class AnimalListTile extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: Image.asset(
-                animal.imagePath,
-                width: 78,
-                height: 78,
-                fit: BoxFit.cover,
-              ),
+              child: AnimalImage(imagePath: animal.imagePath, width: 78, height: 78),
             ),
             const SizedBox(width: 12),
             Expanded(

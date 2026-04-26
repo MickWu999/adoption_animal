@@ -110,17 +110,17 @@ class HomePage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  RoundedSearchField(
-                    hintText: '搜尋品種、地區或收容所',
-                    enabled: false,
-                    onTap: () {
-                      ref
-                          .read(adoptionControllerProvider.notifier)
-                          .selectTab(1);
-                      context.go('/search');
-                    },
-                  ),
+                  // const SizedBox(height: 18),
+                  // RoundedSearchField(
+                  //   hintText: '搜尋品種、地區或收容所',
+                  //   enabled: false,
+                  //   onTap: () {
+                  //     ref
+                  //         .read(adoptionControllerProvider.notifier)
+                  //         .selectTab(1);
+                  //     context.go('/search');
+                  //   },
+                  // ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
