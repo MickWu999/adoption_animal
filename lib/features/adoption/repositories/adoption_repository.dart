@@ -1,4 +1,3 @@
-import '../models/animal_api_query_params.dart';
 import '../models/app_models.dart';
 
 abstract class AdoptionRepository {
@@ -6,7 +5,12 @@ abstract class AdoptionRepository {
   // 讓 controller 與頁面不需要跟著調整。
   List<HomeCategory> getHomeCategories();
   List<Animal> getAnimals();
-  Future<AnimalPage> fetchAnimals(AnimalApiQueryParams params);
+  Future<AnimalPage> fetchAnimals(
+    AnimalSearchParams searchParams, {
+    int top = 1000,
+    int skip = 0,
+  });
+  List<Shelter> buildShelters(List<Animal> animals);
   List<Shelter> getShelters();
   List<NoticeItem> getNotifications();
 }

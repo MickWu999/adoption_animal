@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../models/animal_api_query_params.dart';
 import '../models/app_models.dart';
 import '../repositories/adoption_repository.dart';
-import '../repositories/animal_api_mapper.dart';
 import '../repositories/remote_adoption_repository.dart';
 import 'adoption_state.dart';
 import 'load_phase.dart';
@@ -125,19 +123,15 @@ class AdoptionController extends _$AdoptionController {
 
     final requestToken = _fetchToken;
     final repository = ref.read(adoptionRepositoryProvider);
-    // Supabase 接點 2:
-    // 這裡只負責組出分頁與篩選條件，實際要怎麼查資料表交給 repository。
-    // 如果改成 Supabase，通常只需要保留 params 的概念，並在 repository 內轉成 query builder。
-    final params = AnimalApiQueryParams.fromSearchParams(
-      state.searchFilters,
-      top: _pageSize,
-      skip: state.animals.length,
-    );
 
     state = state.copyWith(paginationLoadPhase: LoadPhase.loading);
 
     try {
-      final page = await repository.fetchAnimals(params);
+      final page = await repository.fetchAnimals(
+        state.searchFilters,
+        top: _pageSize,
+        skip: state.animals.length,
+      );
       if (requestToken != _fetchToken) {
         return;
       }
@@ -145,7 +139,7 @@ class AdoptionController extends _$AdoptionController {
       final mergedAnimals = [...state.animals, ...page.items];
       state = state.copyWith(
         animals: mergedAnimals,
-        shelters: AnimalApiMapper.sheltersFromAnimals(mergedAnimals),
+        shelters: repository.buildShelters(mergedAnimals),
         paginationLoadPhase: LoadPhase.success,
         hasMoreAnimals: page.hasMore,
       );
@@ -162,13 +156,6 @@ class AdoptionController extends _$AdoptionController {
     AnimalSearchParams searchFilters,
   ) async {
     final requestToken = ++_fetchToken;
-    // Supabase 接點 3:
-    // 首次載入與套用篩選都會走這裡；若改成 Supabase，controller 不需要改查詢細節，
-    // 只要 repository.fetchAnimals(params) 能回傳同樣的 AnimalPage 即可。
-    final params = AnimalApiQueryParams.fromSearchParams(
-      searchFilters,
-      top: _pageSize,
-    );
 
     state = state.copyWith(
       animals: const [],
@@ -179,13 +166,13 @@ class AdoptionController extends _$AdoptionController {
     );
 
     try {
-      final page = await repository.fetchAnimals(params);
+      final page = await repository.fetchAnimals(searchFilters, top: _pageSize);
       if (requestToken != _fetchToken) {
         return;
       }
       state = state.copyWith(
         animals: page.items,
-        shelters: AnimalApiMapper.sheltersFromAnimals(page.items),
+        shelters: repository.buildShelters(page.items),
         initialLoadPhase: page.items.isEmpty
             ? LoadPhase.empty
             : LoadPhase.success,

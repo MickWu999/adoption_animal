@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/adoption_theme.dart';
-import '../models/animal_api_query_params.dart';
 import '../models/app_models.dart';
 import 'adoption_repository.dart';
 
@@ -48,8 +47,15 @@ class MockAdoptionRepository implements AdoptionRepository {
   List<Animal> getAnimals() => const [];
 
   @override
-  Future<AnimalPage> fetchAnimals(AnimalApiQueryParams params) async =>
+  Future<AnimalPage> fetchAnimals(
+    AnimalSearchParams searchParams, {
+    int top = 1000,
+    int skip = 0,
+  }) async =>
       const AnimalPage(items: [], hasMore: false);
+
+  @override
+  List<Shelter> buildShelters(List<Animal> animals) => const [];
 
   @override
   List<Shelter> getShelters() => const [];
