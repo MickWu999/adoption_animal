@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/adoption_theme.dart';
 
 class AppSearchField extends StatelessWidget {
@@ -37,7 +38,7 @@ class AppSearchField extends StatelessWidget {
         filled: true,
         fillColor: AdoptionColors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(context.r(22)),
           borderSide: BorderSide.none,
         ),
       ),

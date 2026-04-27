@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/adoption_theme.dart';
 
 class EmptyStatePanel extends StatelessWidget {
@@ -23,7 +24,7 @@ class EmptyStatePanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: EdgeInsets.symmetric(horizontal: context.w(24)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -32,24 +33,27 @@ class EmptyStatePanel extends StatelessWidget {
             children: [
               Image.asset(
                 imagePath,
-                width: 136,
-                height: 136,
+                width: context.w(136),
+                height: context.w(136),
                 fit: BoxFit.cover,
               ),
               CircleAvatar(
-                radius: 18,
+                radius: context.r(18),
                 backgroundColor: AdoptionColors.surface,
                 child: Icon(icon, color: AdoptionColors.danger),
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          SizedBox(height: context.h(18)),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              fontSize: context.sp(22),
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: context.h(8)),
           Text(
             message,
             textAlign: TextAlign.center,
@@ -58,12 +62,15 @@ class EmptyStatePanel extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: context.h(20)),
           FilledButton(
             onPressed: onPressed,
             style: FilledButton.styleFrom(
               backgroundColor: AdoptionColors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.w(28),
+                vertical: context.h(14),
+              ),
             ),
             child: Text(actionLabel),
           ),

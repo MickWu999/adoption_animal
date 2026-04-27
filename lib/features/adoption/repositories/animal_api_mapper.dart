@@ -1,6 +1,6 @@
 import '../../../../core/lookups/adoption_lookups.dart';
-import '../../domain/models/app_models.dart';
 import '../models/animal_api_response.dart';
+import '../models/app_models.dart';
 
 class AnimalApiMapper {
   const AnimalApiMapper();

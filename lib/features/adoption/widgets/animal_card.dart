@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/responsive/responsive.dart';
-import '../../domain/models/app_models.dart';
+import '../../../../core/theme/adoption_theme.dart';
+import '../models/app_models.dart';
 import 'legacy_ui.dart';
 
 class AnimalCard extends StatelessWidget {
@@ -25,7 +26,7 @@ class AnimalCard extends StatelessWidget {
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AdoptionColors.surface,
           borderRadius: BorderRadius.circular(context.r(24)),
         ),
         child: Column(
@@ -46,14 +47,16 @@ class AnimalCard extends StatelessWidget {
                     top: context.h(10),
                     right: context.w(10),
                     child: CircleAvatar(
-                      backgroundColor: Colors.white.withValues(alpha: 0.9),
+                      backgroundColor: AdoptionColors.surface.withValues(
+                        alpha: 0.9,
+                      ),
                       child: IconButton(
                         onPressed: onFavoriteTap,
                         icon: Icon(
                           animal.isFavorite
                               ? Icons.favorite_rounded
                               : Icons.favorite_border_rounded,
-                          color: const Color(0xFFE35D4F),
+                          color: AdoptionColors.danger,
                         ),
                       ),
                     ),
@@ -83,7 +86,7 @@ class AnimalCard extends StatelessWidget {
                     '${animal.location}・${animal.breed}',
                     style: TextStyle(
                       fontSize: context.sp(13),
-                      color: Colors.black54,
+                      color: AdoptionColors.textMuted,
                     ),
                   ),
                   SizedBox(height: context.h(8)),

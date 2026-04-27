@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/adoption_theme.dart';
-import '../../domain/models/app_models.dart';
+import '../models/app_models.dart';
 import '../widgets/legacy_ui.dart';
 
 class HomeHeroBanner extends StatelessWidget {

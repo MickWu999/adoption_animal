@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
@@ -38,7 +39,7 @@ class AnimalDetailPage extends ConsumerWidget {
           CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 380,
+                expandedHeight: context.h(380),
                 pinned: true,
                 backgroundColor: Colors.transparent,
                 leading: CircleIconButton(
@@ -47,13 +48,13 @@ class AnimalDetailPage extends ConsumerWidget {
                 ),
                 actions: [
                   const CircleIconButton(icon: Icons.ios_share_outlined),
-                  const SizedBox(width: 8),
+                  SizedBox(width: context.w(8)),
                   CircleIconButton(
                     icon: Icons.favorite_rounded,
                     color: AdoptionColors.danger,
                     onTap: () => controller.toggleFavorite(animal.id),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: context.w(12)),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
                   background: Stack(
@@ -78,7 +79,7 @@ class AnimalDetailPage extends ConsumerWidget {
               ),
               SliverToBoxAdapter(
                 child: Container(
-                  transform: Matrix4.translationValues(0, -18, 0),
+                  transform: Matrix4.translationValues(0, -context.h(18), 0),
                   decoration: const BoxDecoration(
                     color: AdoptionColors.background,
                     borderRadius: BorderRadius.vertical(
@@ -86,7 +87,12 @@ class AnimalDetailPage extends ConsumerWidget {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
+                    padding: EdgeInsets.fromLTRB(
+                      context.w(20),
+                      context.h(20),
+                      context.w(20),
+                      context.h(120),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -94,15 +100,15 @@ class AnimalDetailPage extends ConsumerWidget {
                           children: [
                             Text(
                               animal.name,
-                              style: const TextStyle(
-                                fontSize: 30,
+                              style: TextStyle(
+                                fontSize: context.sp(30),
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: context.w(10)),
                             ...animal.tags.map(
                               (tag) => Padding(
-                                padding: const EdgeInsets.only(right: 6),
+                                padding: EdgeInsets.only(right: context.w(6)),
                                 child: StatusChip(
                                   text: tag.label,
                                   color: tag.color,
@@ -111,23 +117,24 @@ class AnimalDetailPage extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: context.h(8)),
                         Text(
                           '${animal.location}・${animal.ageLabel}・${animal.genderLabel}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AdoptionColors.textMuted,
                             fontWeight: FontWeight.w600,
+                            fontSize: context.sp(14),
                           ),
                         ),
-                        const SizedBox(height: 22),
-                        const Text(
+                        SizedBox(height: context.h(22)),
+                        Text(
                           '基本資料',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: context.sp(18),
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: context.h(14)),
                         InfoTable(
                           rows: [
                             ['品種', animal.breed],
@@ -138,22 +145,22 @@ class AnimalDetailPage extends ConsumerWidget {
                             ['id', animal.id],
                           ],
                         ),
-                        const SizedBox(height: 22),
-                        const Text(
+                        SizedBox(height: context.h(22)),
+                        Text(
                           '收容所資訊',
                           style: TextStyle(
-                            fontSize: 18,
+                            fontSize: context.sp(18),
                             fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        SizedBox(height: context.h(14)),
                         GestureDetector(
                           onTap: () => context.push('/shelter/${shelter.id}'),
                           child: Container(
-                            padding: const EdgeInsets.all(18),
+                            padding: EdgeInsets.all(context.w(18)),
                             decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(22),
+                              color: AdoptionColors.surface,
+                              borderRadius: BorderRadius.circular(context.r(22)),
                             ),
                             child: Row(
                               children: [
@@ -164,29 +171,34 @@ class AnimalDetailPage extends ConsumerWidget {
                                     children: [
                                       Text(
                                         shelter.name,
-                                        style: const TextStyle(
-                                          fontSize: 18,
+                                        style: TextStyle(
+                                          fontSize: context.sp(18),
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
+                                      SizedBox(height: context.h(8)),
                                       Text(
                                         shelter.address,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AdoptionColors.textMuted,
+                                          fontSize: context.sp(14),
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      SizedBox(height: context.h(4)),
                                       Text(
                                         shelter.phone,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: AdoptionColors.textMuted,
+                                          fontSize: context.sp(14),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const Icon(Icons.chevron_right_rounded),
+                                Icon(
+                                  Icons.chevron_right_rounded,
+                                  size: context.sp(24),
+                                ),
                               ],
                             ),
                           ),
@@ -199,9 +211,9 @@ class AnimalDetailPage extends ConsumerWidget {
             ],
           ),
           Positioned(
-            left: 20,
-            right: 20,
-            bottom: 20,
+            left: context.w(20),
+            right: context.w(20),
+            bottom: context.h(20),
             child: Row(
               children: [
                 Expanded(
@@ -209,17 +221,17 @@ class AnimalDetailPage extends ConsumerWidget {
                     onPressed: () => context.push('/shelter/${shelter.id}'),
                     style: FilledButton.styleFrom(
                       backgroundColor: AdoptionColors.success,
-                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      padding: EdgeInsets.symmetric(vertical: context.h(18)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(context.r(18)),
                       ),
                     ),
                     child: const Text('聯絡收容所'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.w(12)),
                 const BottomAction(icon: Icons.ios_share_outlined, onTap: noop),
-                const SizedBox(width: 12),
+                SizedBox(width: context.w(12)),
                 BottomAction(
                   icon: Icons.favorite_rounded,
                   color: AdoptionColors.danger,

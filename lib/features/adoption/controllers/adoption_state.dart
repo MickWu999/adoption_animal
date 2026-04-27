@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/lookups/adoption_lookups.dart';
-import '../../domain/models/app_models.dart';
+import '../models/app_models.dart';
 import 'load_phase.dart';
 
 part 'adoption_state.freezed.dart';

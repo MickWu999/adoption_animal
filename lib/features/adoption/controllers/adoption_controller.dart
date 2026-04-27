@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../data/mappers/animal_api_mapper.dart';
-import '../../data/models/animal_api_query_params.dart';
-import '../../data/repositories/adoption_repository.dart';
-import '../../data/repositories/remote_adoption_repository.dart';
-import '../../domain/models/app_models.dart';
+import '../models/animal_api_query_params.dart';
+import '../models/app_models.dart';
+import '../repositories/adoption_repository.dart';
+import '../repositories/animal_api_mapper.dart';
+import '../repositories/remote_adoption_repository.dart';
 import 'adoption_state.dart';
 import 'load_phase.dart';
 

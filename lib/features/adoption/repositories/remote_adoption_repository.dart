@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 
-import '../../domain/models/app_models.dart';
-import '../mappers/animal_api_mapper.dart';
 import '../models/animal_api_response.dart';
 import '../models/animal_api_query_params.dart';
+import '../models/app_models.dart';
+import 'animal_api_mapper.dart';
 import 'mock_adoption_repository.dart';
 
 class RemoteAdoptionRepository extends MockAdoptionRepository {

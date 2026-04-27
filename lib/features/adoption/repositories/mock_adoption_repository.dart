@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/models/app_models.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../models/animal_api_query_params.dart';
+import '../models/app_models.dart';
 import 'adoption_repository.dart';
 
 class MockAdoptionRepository implements AdoptionRepository {
@@ -31,14 +32,14 @@ class MockAdoptionRepository implements AdoptionRepository {
       HomeCategory(
         label: '附近',
         icon: Icons.near_me_rounded,
-        background: Color(0xFFE3F1CC),
-        foreground: Color(0xFF4F8A3F),
+        background: Color(0xFFF1E4D7),
+        foreground: AdoptionColors.primary,
       ),
       HomeCategory(
         label: '已絕育',
         icon: Icons.favorite_rounded,
-        background: Color(0xFFDFF0DD),
-        foreground: Color(0xFF4F8A3F),
+        background: Color(0xFFF0E2D5),
+        foreground: AdoptionColors.primaryStrong,
       ),
     ];
   }
@@ -70,7 +71,7 @@ class MockAdoptionRepository implements AdoptionRepository {
         message: '你收藏的「小黑」狀態更新為：已施打疫苗。',
         time: '1 小時前',
         icon: Icons.favorite_rounded,
-        color: Color(0xFFE35D4F),
+        color: AdoptionColors.danger,
       ),
       NoticeItem(
         id: 'n3',
@@ -78,7 +79,7 @@ class MockAdoptionRepository implements AdoptionRepository {
         message: '你追蹤的「小雪」已找到新家。',
         time: '昨天 18:30',
         icon: Icons.celebration_rounded,
-        color: Color(0xFF4F8A3F),
+        color: AdoptionColors.primary,
       ),
     ];
   }

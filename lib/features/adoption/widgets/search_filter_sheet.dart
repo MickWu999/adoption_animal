@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/lookups/adoption_lookups.dart';
+import '../../../../core/responsive/responsive.dart';
 import '../../../../core/theme/adoption_theme.dart';
-import '../../domain/models/app_models.dart';
+import '../models/app_models.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   const FilterBottomSheet({super.key, required this.initialFilters});
@@ -75,7 +76,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           color: AdoptionColors.surfaceSoft,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(14),
+          context.w(20),
+          context.h(16),
+        ),
         child: SafeArea(
           top: false,
           child: Column(
@@ -83,22 +89,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             children: [
               Center(
                 child: Container(
-                  width: 48,
-                  height: 4,
+                  width: context.w(48),
+                  height: context.h(4),
                   decoration: BoxDecoration(
                     color: AdoptionColors.dragHandle,
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: context.h(18)),
               Row(
                 children: [
-                  const Text(
+                  Text(
                     '篩選毛孩',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                    style: TextStyle(
+                      fontSize: context.sp(22),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: context.w(10)),
                   _SelectionBadge(count: _activeCount),
                   const Spacer(),
                   TextButton.icon(
@@ -107,12 +116,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                     label: const Text('重設'),
                     style: TextButton.styleFrom(
                       foregroundColor: AdoptionColors.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.w(12),
+                        vertical: context.h(10),
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(context.r(16)),
                       ),
                     ),
                   ),
@@ -125,7 +134,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(height: 18),
+              SizedBox(height: context.h(18)),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -135,7 +144,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         title: '基礎查詢',
                         subtitle: '先從最常用的條件開始',
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.h(10)),
                       _DropdownFilterTile<int>(
                         label: '縣市',
                         value: _animalAreaPkid,
@@ -153,7 +162,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.h(10)),
                       _DropdownFilterTile<int>(
                         label: '收容所',
                         value: _animalShelterPkid,
@@ -176,7 +185,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                         onChanged: (value) =>
                             _apply(_filters.copyWith(animalShelterPkid: value)),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.h(10)),
                       _DropdownFilterTile<String>(
                         label: '動物類型',
                         value: _animalKind,
@@ -192,7 +201,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.h(10)),
                       _DropdownFilterTile<String>(
                         label: '年齡',
                         value: _animalAge,
@@ -207,7 +216,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.h(10)),
                       _DropdownFilterTile<String>(
                         label: '狀態',
                         value: _animalStatus,
@@ -224,7 +233,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      SizedBox(height: context.h(18)),
                       Row(
                         children: [
                           const _SectionLabel(
@@ -254,7 +263,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 _filters.copyWith(animalVariety: value.trim()),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: context.h(10)),
                             _DropdownFilterTile<String>(
                               label: '性別',
                               value: _animalSex,
@@ -270,7 +279,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: context.h(10)),
                             _DropdownFilterTile<String>(
                               label: '體型',
                               value: _animalBodytype,
@@ -286,7 +295,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: context.h(10)),
                             _TextFilterField(
                               label: '毛色',
                               hintText: '例如 黑色 / 黃白色',
@@ -295,7 +304,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 _filters.copyWith(animalColour: value.trim()),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: context.h(10)),
                             _DropdownFilterTile<String>(
                               label: '是否絕育',
                               value: _animalSterilization,
@@ -313,7 +322,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: context.h(10)),
                             _DropdownFilterTile<String>(
                               label: '疫苗',
                               value: _animalBacterin,
@@ -340,7 +349,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.h(16)),
               _ActionBar(onApply: () => Navigator.of(context).pop(_filters)),
             ],
           ),
@@ -363,14 +372,17 @@ class _SectionLabel extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+          style: TextStyle(
+            fontSize: context.sp(16),
+            fontWeight: FontWeight.w900,
+          ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: context.h(4)),
         Text(
           subtitle,
-          style: const TextStyle(
+          style: TextStyle(
             color: AdoptionColors.textMuted,
-            fontSize: 12,
+            fontSize: context.sp(12),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -389,20 +401,23 @@ class _SelectionBadge extends StatelessWidget {
     final hasSelection = count > 0;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w(10),
+        vertical: context.h(6),
+      ),
       decoration: BoxDecoration(
         color: hasSelection
             ? AdoptionColors.primarySoft
             : AdoptionColors.chipBg,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        hasSelection ? '已選 $count 項' : '尚未選條件',
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          color: hasSelection
-              ? AdoptionColors.primaryStrong
+        child: Text(
+          hasSelection ? '已選 $count 項' : '尚未選條件',
+          style: TextStyle(
+            fontSize: context.sp(12),
+            fontWeight: FontWeight.w800,
+            color: hasSelection
+                ? AdoptionColors.primaryStrong
               : AdoptionColors.textSecondary,
         ),
       ),
@@ -423,10 +438,13 @@ class _ActionBar extends StatelessWidget {
         onPressed: onApply,
         style: FilledButton.styleFrom(
           backgroundColor: AdoptionColors.primary,
-          minimumSize: const Size.fromHeight(52),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          minimumSize: Size.fromHeight(context.h(52)),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.w(18),
+            vertical: context.h(14),
+          ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(context.r(16)),
           ),
         ),
         child: const Text('套用篩選'),
@@ -458,30 +476,34 @@ class _DropdownFilterTile<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.w(16),
+        vertical: context.h(4),
+      ),
       decoration: BoxDecoration(
         color: AdoptionColors.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(context.r(18)),
         border: Border.all(color: AdoptionColors.border),
       ),
       child: Row(
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.w800,
               color: AdoptionColors.textStrong,
+              fontSize: context.sp(14),
             ),
           ),
           const Spacer(),
           SizedBox(
-            width: 152,
+            width: context.w(152),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<T>(
                 value: value,
                 isExpanded: true,
                 alignment: Alignment.centerRight,
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(context.r(18)),
                 icon: const Icon(Icons.keyboard_arrow_down_rounded),
                 items: options
                     .map(
@@ -556,15 +578,15 @@ class _TextFilterFieldState extends State<_TextFilterField> {
         filled: true,
         fillColor: AdoptionColors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(context.r(18)),
           borderSide: const BorderSide(color: AdoptionColors.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(context.r(18)),
           borderSide: const BorderSide(color: AdoptionColors.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(context.r(18)),
           borderSide: const BorderSide(
             color: AdoptionColors.primary,
             width: 1.2,

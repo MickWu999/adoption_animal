@@ -1,15 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../features/adoption/presentation/pages/animal_detail_page.dart';
-import '../features/adoption/presentation/pages/app_shell.dart';
-import '../features/adoption/presentation/pages/favorites_page.dart';
-import '../features/adoption/presentation/pages/home_page.dart';
-import '../features/adoption/presentation/pages/nearby_page.dart';
-import '../features/adoption/presentation/pages/notifications_page.dart';
-import '../features/adoption/presentation/pages/profile_page.dart';
-import '../features/adoption/presentation/pages/search_page.dart';
-import '../features/adoption/presentation/pages/shelter_detail_page.dart';
+import '../features/adoption/pages/animal_detail_page.dart';
+import '../features/adoption/pages/app_shell.dart';
+import '../features/adoption/pages/favorites_page.dart';
+import '../features/adoption/pages/home_page.dart';
+import '../features/adoption/pages/nearby_page.dart';
+import '../features/adoption/pages/notifications_page.dart';
+import '../features/adoption/pages/profile_page.dart';
+import '../features/adoption/pages/search_page.dart';
+import '../features/adoption/pages/shelter_detail_page.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(

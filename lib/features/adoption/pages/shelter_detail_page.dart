@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/responsive/responsive.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
 
@@ -59,7 +60,10 @@ class ShelterDetailPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const Icon(Icons.favorite_rounded, color: Color(0xFFE35D4F)),
+                  const Icon(
+                    Icons.favorite_rounded,
+                    color: AdoptionColors.danger,
+                  ),
                 ],
               ),
               SizedBox(height: context.h(10)),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../data/mock_data.dart';
+import '../../../../core/responsive/responsive.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
 import '../widgets/legacy_ui.dart';
+
+const _profileMenus = ['認養偏好設定', '我的瀏覽紀錄', '通知設定', '幫助與客服', '關於我們', '設定'];
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -14,15 +17,20 @@ class ProfilePage extends ConsumerWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(18),
+          context.w(20),
+          context.h(24),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 62,
-                  height: 62,
+                  width: context.w(62),
+                  height: context.w(62),
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
@@ -31,27 +39,28 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 14),
-                const Column(
+                SizedBox(width: context.w(14)),
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '毛小孩愛心人',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: context.sp(24),
                         fontWeight: FontWeight.w900,
+                        color: AdoptionColors.textPrimary,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: context.h(4)),
                     Text(
                       'love.pets@example.com',
-                      style: TextStyle(color: Colors.black54),
+                      style: const TextStyle(color: AdoptionColors.textMuted),
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: 22),
+            SizedBox(height: context.h(22)),
             Row(
               children: [
                 Expanded(
@@ -60,18 +69,18 @@ class ProfilePage extends ConsumerWidget {
                     label: '我的收藏',
                   ),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: context.w(10)),
                 const Expanded(
                   child: StatCard(value: '3', label: '瀏覽紀錄'),
                 ),
-                const SizedBox(width: 10),
+                SizedBox(width: context.w(10)),
                 const Expanded(
                   child: StatCard(value: '2', label: '送養設定'),
                 ),
               ],
             ),
-            const SizedBox(height: 24),
-            ...profileMenus.map((label) => ProfileMenuTile(label: label)),
+            SizedBox(height: context.h(24)),
+            ..._profileMenus.map((label) => ProfileMenuTile(label: label)),
           ],
         ),
       ),

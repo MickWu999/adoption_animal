@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../domain/models/app_models.dart';
+import 'app_models.dart';
 
 part 'animal_api_query_params.freezed.dart';
 part 'animal_api_query_params.g.dart';

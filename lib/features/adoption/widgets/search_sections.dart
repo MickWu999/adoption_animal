@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../domain/models/app_models.dart';
+import '../../../../core/responsive/responsive.dart';
+import '../models/app_models.dart';
 import '../widgets/legacy_ui.dart';
 
 class SearchFilterBar extends StatelessWidget {
@@ -25,7 +26,7 @@ class SearchFilterBar extends StatelessWidget {
       child: Row(
         children: [
           Padding(
-            padding: const EdgeInsets.only(right: 10),
+            padding: EdgeInsets.only(right: context.w(10)),
             child: FilterChipCard(
               label: '篩選',
               selected: true,
@@ -34,7 +35,7 @@ class SearchFilterBar extends StatelessWidget {
           ),
           ...labels.map(
             (label) => Padding(
-              padding: const EdgeInsets.only(right: 10),
+              padding: EdgeInsets.only(right: context.w(10)),
               child: FilterChipCard(
                 label: label,
                 selected: true,
@@ -75,12 +76,12 @@ class SearchResultsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: scrollController,
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: EdgeInsets.only(bottom: context.h(24)),
       itemCount: results.length + 2,
       itemBuilder: (context, index) {
         if (index == 0) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: context.h(12)),
             child: Row(
               children: [
                 // Text(
@@ -107,7 +108,7 @@ class SearchResultsList extends StatelessWidget {
           }
 
           if (shouldShowLoadMoreTerminator) {
-            return const SizedBox(height: 8);
+            return SizedBox(height: context.h(8));
           }
 
           return const SizedBox.shrink();
@@ -115,7 +116,7 @@ class SearchResultsList extends StatelessWidget {
 
         final animal = results[index - 1];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: EdgeInsets.only(bottom: context.h(16)),
           child: AnimalCard(
             animal: animal,
             onTap: () => context.push('/animal/${animal.id}'),

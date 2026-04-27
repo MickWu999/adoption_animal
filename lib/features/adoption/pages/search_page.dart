@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/models/app_models.dart';
+import '../../../../core/responsive/responsive.dart';
+import '../../../../core/theme/adoption_theme.dart';
 import '../controllers/adoption_controller.dart';
+import '../models/app_models.dart';
 import '../widgets/legacy_ui.dart';
-import '../widgets/search_sections.dart';
 import '../widgets/search_filter_sheet.dart';
+import '../widgets/search_sections.dart';
 
 class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
@@ -57,17 +59,22 @@ class _SearchPageState extends ConsumerState<SearchPage> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(16),
+          context.w(20),
+          0,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     '尋找毛孩',
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: context.sp(26),
                       fontWeight: FontWeight.w900,
                       letterSpacing: -0.5,
                     ),
@@ -90,7 +97,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.h(16)),
             if (state.shouldShowSearchFilterBar)
               SearchFilterBar(
                 labels: state.activeFilterLabels,
@@ -98,7 +105,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 onOpenFilters: (filters) => _openFilterSheet(context, filters),
                 onReset: controller.resetSearch,
               ),
-            const SizedBox(height: 18),
+            SizedBox(height: context.h(18)),
             Expanded(
               child: state.shouldShowSearchLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -156,20 +163,28 @@ class StatesPreviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F4ED),
+      backgroundColor: AdoptionColors.background,
       appBar: AppBar(
         title: const Text('狀態預覽'),
         backgroundColor: Colors.transparent,
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-        children: const [
+        padding: EdgeInsets.fromLTRB(
+          context.w(20),
+          context.h(8),
+          context.w(20),
+          context.h(24),
+        ),
+        children: [
           Text(
             '空狀態',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              fontSize: context.sp(20),
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          SizedBox(height: 14),
-          PreviewCard(
+          SizedBox(height: context.h(14)),
+          const PreviewCard(
             child: EmptyStatePanel(
               imagePath: 'assets/images/dog/alvan-nee-T-0EW-SEbsE-unsplash.jpg',
               title: '還沒有收藏任何毛孩',
@@ -179,8 +194,8 @@ class StatesPreviewPage extends StatelessWidget {
               icon: Icons.favorite_border_rounded,
             ),
           ),
-          SizedBox(height: 12),
-          PreviewCard(
+          SizedBox(height: context.h(12)),
+          const PreviewCard(
             child: EmptyStatePanel(
               imagePath:
                   'assets/images/others_animals/melissa-keizer-X-0FisCRIaA-unsplash.jpg',
@@ -191,8 +206,8 @@ class StatesPreviewPage extends StatelessWidget {
               icon: Icons.search_off_rounded,
             ),
           ),
-          SizedBox(height: 12),
-          PreviewCard(
+          SizedBox(height: context.h(12)),
+          const PreviewCard(
             child: EmptyStatePanel(
               imagePath: 'assets/images/shaltar/sheltar.jpg',
               title: '附近沒有收容所',
@@ -202,17 +217,20 @@ class StatesPreviewPage extends StatelessWidget {
               icon: Icons.location_off_rounded,
             ),
           ),
-          SizedBox(height: 20),
+          SizedBox(height: context.h(20)),
           Text(
             '載入 / 錯誤',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              fontSize: context.sp(20),
+              fontWeight: FontWeight.w900,
+            ),
           ),
-          SizedBox(height: 14),
-          PreviewCard(
+          SizedBox(height: context.h(14)),
+          const PreviewCard(
             child: LoadingStatePanel(title: '資料載入中...', message: '請稍候片刻'),
           ),
-          SizedBox(height: 12),
-          PreviewCard(
+          SizedBox(height: context.h(12)),
+          const PreviewCard(
             child: ErrorStatePanel(
               icon: Icons.broken_image_outlined,
               title: '圖片載入失敗',
@@ -220,8 +238,8 @@ class StatesPreviewPage extends StatelessWidget {
               actionLabel: '重新載入',
             ),
           ),
-          SizedBox(height: 12),
-          PreviewCard(
+          SizedBox(height: context.h(12)),
+          const PreviewCard(
             child: ErrorStatePanel(
               icon: Icons.wifi_off_rounded,
               title: '網路連線異常',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/responsive/responsive.dart';
 import '../controllers/adoption_controller.dart';
 
 class NotificationsPage extends ConsumerWidget {
@@ -15,16 +16,24 @@ class NotificationsPage extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          padding: EdgeInsets.fromLTRB(
+            context.w(20),
+            context.h(16),
+            context.w(20),
+            0,
+          ),
           child: Column(
             children: [
-              const Center(
+              Center(
                 child: Text(
                   '通知',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    fontSize: context.sp(24),
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: context.h(16)),
               Expanded(
                 child: ListView.separated(
                   itemCount: notifications.length,
@@ -32,18 +41,26 @@ class NotificationsPage extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final item = notifications[index];
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: context.h(10),
+                      ),
                       leading: CircleAvatar(
                         backgroundColor: item.color.withValues(alpha: 0.15),
                         child: Icon(item.icon, color: item.color),
                       ),
                       title: Text(
                         item.title,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: context.sp(16),
+                        ),
                       ),
                       subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 6),
-                        child: Text('${item.message}\n${item.time}'),
+                        padding: EdgeInsets.only(top: context.h(6)),
+                        child: Text(
+                          '${item.message}\n${item.time}',
+                          style: TextStyle(fontSize: context.sp(13)),
+                        ),
                       ),
                     );
                   },

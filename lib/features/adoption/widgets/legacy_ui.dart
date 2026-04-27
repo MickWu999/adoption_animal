@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../core/responsive/responsive.dart';
-import '../../domain/models/app_models.dart';
+import '../../../../core/theme/adoption_theme.dart';
+import '../models/app_models.dart';
 
 void noop() {}
 
@@ -50,7 +51,7 @@ class RoundedSearchField extends StatelessWidget {
           prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: suffixIcon,
           filled: true,
-          fillColor: Colors.white,
+          fillColor: AdoptionColors.surface,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(context.r(22)),
             borderSide: BorderSide.none,
@@ -198,8 +199,8 @@ class EmptyStatePanel extends StatelessWidget {
               ),
               CircleAvatar(
                 radius: context.r(18),
-                backgroundColor: Colors.white,
-                child: Icon(icon, color: const Color(0xFFE35D4F)),
+                backgroundColor: AdoptionColors.surface,
+                child: Icon(icon, color: AdoptionColors.danger),
               ),
             ],
           ),
@@ -217,7 +218,7 @@ class EmptyStatePanel extends StatelessWidget {
             message,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.black54,
+              color: AdoptionColors.textMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -225,7 +226,7 @@ class EmptyStatePanel extends StatelessWidget {
           FilledButton(
             onPressed: onPressed,
             style: FilledButton.styleFrom(
-              backgroundColor: const Color(0xFF4F8A3F),
+              backgroundColor: AdoptionColors.primary,
               padding: EdgeInsets.symmetric(
                 horizontal: context.w(28),
                 vertical: context.h(14),
@@ -258,7 +259,7 @@ class AnimalCard extends StatelessWidget {
     return SizedBox(
       width: width,
       child: Material(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(context.r(18)),
         elevation: 0.5,
         shadowColor: Colors.black.withValues(alpha: 0.08),
@@ -286,15 +287,17 @@ class AnimalCard extends StatelessWidget {
                         onTap: onFavoriteTap,
                         child: CircleAvatar(
                           radius: context.r(14),
-                          backgroundColor: Colors.white.withValues(alpha: 0.95),
+                          backgroundColor: AdoptionColors.surface.withValues(
+                            alpha: 0.95,
+                          ),
                           child: Icon(
                             animal.isFavorite
                                 ? Icons.favorite_rounded
                                 : Icons.favorite_border_rounded,
                             size: context.sp(17),
                             color: animal.isFavorite
-                                ? const Color(0xFFE35D4F)
-                                : Colors.black54,
+                                ? AdoptionColors.danger
+                                : AdoptionColors.textMuted,
                           ),
                         ),
                       ),
@@ -319,7 +322,7 @@ class AnimalCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: context.sp(16),
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF2C2C2C),
+                        color: AdoptionColors.textPrimary,
                       ),
                     ),
                     SizedBox(height: context.h(4)),
@@ -329,7 +332,7 @@ class AnimalCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: context.sp(11),
-                        color: Colors.black54,
+                        color: AdoptionColors.textMuted,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -341,7 +344,7 @@ class AnimalCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: context.sp(13),
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF5B5B5B),
+                        color: AdoptionColors.textSecondary,
                       ),
                     ),
                   ],
@@ -426,7 +429,9 @@ class FilterChipCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = selected ? Colors.white : const Color(0xFF4B4B4B);
+    final foreground = selected
+        ? Colors.white
+        : AdoptionColors.textSecondary;
 
     return InkWell(
       onTap: onTap,
@@ -437,10 +442,12 @@ class FilterChipCard extends StatelessWidget {
           vertical: context.h(10),
         ),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF4F8A3F) : Colors.white,
+          color: selected ? AdoptionColors.primary : AdoptionColors.surface,
           borderRadius: BorderRadius.circular(context.r(16)),
           border: Border.all(
-            color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFE7E0D6),
+            color: selected
+                ? AdoptionColors.primary
+                : AdoptionColors.borderSoft,
           ),
         ),
         child: Text(
@@ -465,7 +472,7 @@ class TagPill extends StatelessWidget {
         vertical: context.h(5),
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F0EA),
+        color: AdoptionColors.chipBg,
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
@@ -544,7 +551,10 @@ class CategoryCard extends StatelessWidget {
           SizedBox(height: context.h(4)),
           Text(
             count,
-            style: TextStyle(fontSize: context.sp(12), color: Colors.black54),
+            style: TextStyle(
+              fontSize: context.sp(12),
+              color: AdoptionColors.textMuted,
+            ),
           ),
         ],
       ),
@@ -556,7 +566,7 @@ class CircleIconButton extends StatelessWidget {
   const CircleIconButton({
     super.key,
     required this.icon,
-    this.color = Colors.black87,
+    this.color = AdoptionColors.textStrong,
     this.onTap,
   });
 
@@ -572,7 +582,7 @@ class CircleIconButton extends StatelessWidget {
         onTap: onTap,
         child: CircleAvatar(
           radius: context.r(20),
-          backgroundColor: Colors.white.withValues(alpha: 0.9),
+          backgroundColor: AdoptionColors.surface.withValues(alpha: 0.9),
           child: Icon(icon, color: color),
         ),
       ),
@@ -585,7 +595,7 @@ class BottomAction extends StatelessWidget {
     super.key,
     required this.icon,
     required this.onTap,
-    this.color = const Color(0xFF4F8A3F),
+    this.color = AdoptionColors.primary,
   });
 
   final IconData icon;
@@ -598,7 +608,7 @@ class BottomAction extends StatelessWidget {
       onTap: onTap,
       child: CircleAvatar(
         radius: context.r(27),
-        backgroundColor: Colors.white,
+        backgroundColor: AdoptionColors.surface,
         child: Icon(icon, color: color),
       ),
     );
@@ -615,7 +625,7 @@ class InfoTable extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(context.w(18)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(context.r(22)),
       ),
       child: Column(
@@ -629,7 +639,7 @@ class InfoTable extends StatelessWidget {
                       width: context.w(88),
                       child: Text(
                         row[0],
-                        style: const TextStyle(color: Colors.black54),
+                        style: const TextStyle(color: AdoptionColors.textMuted),
                       ),
                     ),
                     Expanded(
@@ -662,7 +672,7 @@ class TabText extends StatelessWidget {
           label,
           style: TextStyle(
             fontWeight: FontWeight.w800,
-            color: selected ? const Color(0xFF4F8A3F) : Colors.black54,
+            color: selected ? AdoptionColors.primary : AdoptionColors.textMuted,
           ),
         ),
         SizedBox(height: context.h(10)),
@@ -670,7 +680,7 @@ class TabText extends StatelessWidget {
           width: context.w(28),
           height: context.h(3),
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFF4F8A3F) : Colors.transparent,
+            color: selected ? AdoptionColors.primary : Colors.transparent,
             borderRadius: BorderRadius.circular(999),
           ),
         ),
@@ -688,10 +698,10 @@ class MapPin extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: active ? context.r(20) : context.r(18),
-      backgroundColor: active ? const Color(0xFF4F8A3F) : Colors.white,
+      backgroundColor: active ? AdoptionColors.primary : AdoptionColors.surface,
       child: Icon(
         Icons.pets_rounded,
-        color: active ? Colors.white : const Color(0xFF4F8A3F),
+        color: active ? Colors.white : AdoptionColors.primary,
       ),
     );
   }
@@ -708,7 +718,7 @@ class IconInfoRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: const Color(0xFF4F8A3F)),
+        Icon(icon, color: AdoptionColors.primary),
         SizedBox(width: context.w(10)),
         Expanded(
           child: Text(
@@ -732,7 +742,7 @@ class StatCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: context.h(16)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(context.r(18)),
       ),
       child: Column(
@@ -748,7 +758,7 @@ class StatCard extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-              color: Colors.black54,
+              color: AdoptionColors.textMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -768,7 +778,7 @@ class ProfileMenuTile extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: context.h(12)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(context.r(20)),
       ),
       child: ListTile(
@@ -798,7 +808,7 @@ class AnimalListTile extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(context.w(12)),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AdoptionColors.surface,
           borderRadius: BorderRadius.circular(context.r(20)),
         ),
         child: Row(
@@ -823,7 +833,7 @@ class AnimalListTile extends StatelessWidget {
                   SizedBox(height: context.h(4)),
                   Text(
                     '${animal.location}・${animal.shelterName}',
-                    style: const TextStyle(color: Colors.black54),
+                    style: const TextStyle(color: AdoptionColors.textMuted),
                   ),
                   SizedBox(height: context.h(8)),
                   Row(
@@ -873,7 +883,7 @@ class LoadingStatePanel extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.h(8)),
-        Text(message, style: const TextStyle(color: Colors.black54)),
+        Text(message, style: const TextStyle(color: AdoptionColors.textMuted)),
       ],
     );
   }
@@ -900,7 +910,7 @@ class ErrorStatePanel extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: context.sp(62), color: const Color(0xFF5A5A5A)),
+        Icon(icon, size: context.sp(62), color: AdoptionColors.textSecondary),
         SizedBox(height: context.h(18)),
         Text(
           title,
@@ -910,7 +920,7 @@ class ErrorStatePanel extends StatelessWidget {
           ),
         ),
         SizedBox(height: context.h(8)),
-        Text(message, style: const TextStyle(color: Colors.black54)),
+        Text(message, style: const TextStyle(color: AdoptionColors.textMuted)),
         SizedBox(height: context.h(20)),
         FilledButton(onPressed: () {}, child: Text(actionLabel)),
         if (secondaryLabel != null) ...[
@@ -932,7 +942,7 @@ class PreviewCard extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: context.h(20)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AdoptionColors.surface,
         borderRadius: BorderRadius.circular(context.r(28)),
       ),
       child: child,
@@ -992,16 +1002,18 @@ class SelectablePill extends StatelessWidget {
           vertical: context.h(9),
         ),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF4F8A3F) : Colors.white,
+          color: selected ? AdoptionColors.primary : AdoptionColors.surface,
           borderRadius: BorderRadius.circular(context.r(12)),
           border: Border.all(
-            color: selected ? const Color(0xFF4F8A3F) : const Color(0xFFD9D3C8),
+            color: selected
+                ? AdoptionColors.primary
+                : AdoptionColors.chipBorder,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : const Color(0xFF4B4B4B),
+            color: selected ? Colors.white : AdoptionColors.chipText,
             fontWeight: FontWeight.w700,
           ),
         ),
