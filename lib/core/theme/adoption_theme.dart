@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 class AdoptionColors {
   const AdoptionColors._();
 
-  static const Color primary = Color(0xFF8B5E3C);
-  static const Color primaryStrong = Color(0xFF6F452B);
-  static const Color primarySoft = Color(0xFFF2E4D6);
-  static const Color secondary = Color(0xFFC89A63);
-  static const Color background = Color(0xFFF8F1E8);
-  static const Color surface = Color(0xFFFFFCF8);
-  static const Color surfaceSoft = Color(0xFFF5ECE2);
-  static const Color surfaceMuted = Color(0xFFEFE2D4);
-  static const Color border = Color(0xFFDAC8B8);
-  static const Color borderSoft = Color(0xFFE7D9CC);
-  static const Color textPrimary = Color(0xFF34261D);
-  static const Color textSecondary = Color(0xFF6E584A);
-  static const Color textMuted = Color(0xFF8F7A6C);
-  static const Color textStrong = Color(0xFF453126);
+  static const Color primary = Color(0xFF5A3A1B); // 更深主色
+  static const Color primaryStrong = Color(0xFF2D1B0B); // 最深主色
+  static const Color primarySoft = Color(0xFFF5E6D8); // 更亮柔和
+  static const Color secondary = Color(0xFFFFB74D); // 亮橘色，對比明顯
+  static const Color background = Color(0xFFFFFFFF); // 純白
+  static const Color surface = Color(0xFFFFFAF3); // 更亮
+  static const Color surfaceSoft = Color(0xFFF8EAD9); // 更亮
+  static const Color surfaceMuted = Color(0xFFEFE2D4); // 保持
+  static const Color border = Color(0xFFBCA483); // 更深
+  static const Color borderSoft = Color(0xFFE7D9CC); // 保持
+  static const Color textPrimary = Color(0xFF181818); // 幾乎黑色
+  static const Color textSecondary = Color(0xFF5A3A1B); // 主色
+  static const Color textMuted = Color(0xFF8F7A6C); // 保持
+  static const Color textStrong = Color(0xFF000000); // 純黑
   static const Color danger = Color(0xFFC86D4E);
   static const Color success = Color(0xFF9A6F49);
   static const Color successSoft = Color(0xFFF0E1D2);
