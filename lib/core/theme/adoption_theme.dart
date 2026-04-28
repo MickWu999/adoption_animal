@@ -4,37 +4,37 @@ import 'package:flutter/material.dart';
 class AdoptionColors {
   const AdoptionColors._();
 
-  static const Color primary = Color(0xFF5A3A1B); // 更深主色
-  static const Color primaryStrong = Color(0xFF2D1B0B); // 最深主色
-  static const Color primarySoft = Color(0xFFF5E6D8); // 更亮柔和
-  static const Color secondary = Color(0xFFFFB74D); // 亮橘色，對比明顯
-  static const Color background = Color(0xFFFFFFFF); // 純白
-  static const Color surface = Color(0xFFFFFAF3); // 更亮
-  static const Color surfaceSoft = Color(0xFFF8EAD9); // 更亮
-  static const Color surfaceMuted = Color(0xFFEFE2D4); // 保持
-  static const Color border = Color(0xFFBCA483); // 更深
-  static const Color borderSoft = Color(0xFFE7D9CC); // 保持
-  static const Color textPrimary = Color(0xFF181818); // 幾乎黑色
-  static const Color textSecondary = Color(0xFF5A3A1B); // 主色
-  static const Color textMuted = Color(0xFF8F7A6C); // 保持
-  static const Color textStrong = Color(0xFF000000); // 純黑
+  static const Color primary = Color(0xFF5A3A1B);
+  static const Color primaryStrong = Color(0xFF2D1B0B);
+  static const Color primarySoft = Color(0xFFE6C4A0);
+  static const Color secondary = Color(0xFFE59A2E);
+  static const Color background = Color(0xFFFCF8F3);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = Color(0xFFF1DEC8);
+  static const Color surfaceMuted = Color(0xFFE6D0B8);
+  static const Color border = Color(0xFFB58F69);
+  static const Color borderSoft = Color(0xFFD6BBA0);
+  static const Color textPrimary = Color(0xFF181818);
+  static const Color textSecondary = Color(0xFF5B4B3F);
+  static const Color textMuted = Color(0xFF7A695C);
+  static const Color textStrong = Color(0xFF000000);
   static const Color danger = Color(0xFFC86D4E);
   static const Color success = Color(0xFF9A6F49);
-  static const Color successSoft = Color(0xFFF0E1D2);
+  static const Color successSoft = Color(0xFFE4C29C);
   static const Color warning = Color(0xFFD39A58);
-  static const Color chipBg = Color(0xFFF1E4D7);
-  static const Color chipBorder = Color(0xFFD8C3B1);
+  static const Color chipBg = Color(0xFFF2E2D0);
+  static const Color chipBorder = Color(0xFFCAA98A);
   static const Color chipSelectedBg = Color(0xFF8B5E3C);
   static const Color chipSelectedBorder = Color(0xFF8B5E3C);
   static const Color chipSelectedText = Colors.white;
   static const Color chipText = Color(0xFF5F4B3E);
-  static const Color badgeBg = Color(0xFFEEDCC9);
+  static const Color badgeBg = Color(0xFFE7D1B7);
   static const Color badgeText = Color(0xFF6F452B);
   static const Color dragHandle = Color(0xFFCDB9A8);
   static const Color heroOverlayStrong = Color(0x73000000);
   static const Color heroOverlayLight = Color(0x1A000000);
   static const Color mapOverlay = Color(0x38FFFFFF);
-  static const Color callBackground = Color(0xFFF0E2D5);
+  static const Color callBackground = Color(0xFFEED7BE);
   static const Color iconMuted = Color(0xFFA58E7D);
 }
 

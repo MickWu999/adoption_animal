@@ -19,11 +19,21 @@ class CircleActionButton extends StatelessWidget {
       borderRadius: BorderRadius.circular(context.r(14)),
       child: CircleAvatar(
         radius: context.r(20),
-        backgroundColor: AdoptionColors.successSoft,
-        child: Icon(
-          icon,
-          size: context.sp(18),
-          color: AdoptionColors.primary,
+        backgroundColor: AdoptionColors.surface,
+        foregroundColor: AdoptionColors.primaryStrong,
+        child: Container(
+          width: context.w(36),
+          height: context.w(36),
+          decoration: BoxDecoration(
+            color: AdoptionColors.surfaceSoft,
+            borderRadius: BorderRadius.circular(context.r(18)),
+            border: Border.all(color: AdoptionColors.border, width: 1.2),
+          ),
+          child: Icon(
+            icon,
+            size: context.sp(18),
+            color: AdoptionColors.primaryStrong,
+          ),
         ),
       ),
     );

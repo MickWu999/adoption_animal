@@ -14,10 +14,27 @@ class AppTheme {
         secondary: AdoptionColors.secondary,
         surface: AdoptionColors.surface,
       ),
-      navigationBarTheme: const NavigationBarThemeData(
-        indicatorColor: AdoptionColors.primarySoft,
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: AdoptionColors.surfaceSoft,
         backgroundColor: AdoptionColors.surface,
         height: 74,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return TextStyle(
+            color: selected
+                ? AdoptionColors.primaryStrong
+                : AdoptionColors.textMuted,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          final selected = states.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selected
+                ? AdoptionColors.primaryStrong
+                : AdoptionColors.textMuted,
+          );
+        }),
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -29,6 +46,12 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AdoptionColors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AdoptionColors.primaryStrong,
+          textStyle: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       extensions: const [AdoptionTheme.light()],
     );
