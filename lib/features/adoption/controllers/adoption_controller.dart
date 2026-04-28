@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/app_models.dart';
 import '../repositories/adoption_repository.dart';
-import '../repositories/remote_adoption_repository.dart';
+import '../repositories/supabase_adoption_repository.dart';
 import 'adoption_state.dart';
 import 'load_phase.dart';
 
@@ -13,10 +15,7 @@ part 'adoption_controller.g.dart';
 
 @Riverpod(keepAlive: true)
 AdoptionRepository adoptionRepository(Ref ref) {
-  // Supabase 接點 1:
-  // 之後可在這裡把 RemoteAdoptionRepository 換成 SupabaseAdoptionRepository，
-  // UI 與 controller 會繼續走同一套 fetchAnimals / pagination 流程。
-  return RemoteAdoptionRepository();
+  return SupabaseAdoptionRepository(client: Supabase.instance.client);
 }
 
 @riverpod
@@ -143,7 +142,9 @@ class AdoptionController extends _$AdoptionController {
         paginationLoadPhase: LoadPhase.success,
         hasMoreAnimals: page.hasMore,
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('loadNextPage failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
       if (requestToken != _fetchToken) {
         return;
       }
@@ -179,7 +180,9 @@ class AdoptionController extends _$AdoptionController {
         paginationLoadPhase: LoadPhase.idle,
         hasMoreAnimals: page.hasMore,
       );
-    } catch (_) {
+    } catch (error, stackTrace) {
+      debugPrint('refreshAnimals failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
       if (requestToken != _fetchToken) {
         return;
       }

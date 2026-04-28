@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/responsive/responsive.dart';
+import '../../../../core/theme/adoption_theme.dart';
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
@@ -23,10 +24,21 @@ class SectionHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: context.sp(20),
             fontWeight: FontWeight.w900,
+            color: AdoptionColors.textPrimary,
           ),
         ),
         const Spacer(),
-        TextButton(onPressed: onTap, child: Text(actionLabel)),
+        TextButton(
+          onPressed: onTap,
+          child: Text(
+            actionLabel,
+            style: TextStyle(
+              color: AdoptionColors.primaryStrong,
+              fontSize: context.sp(13),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
       ],
     );
   }
